@@ -1,6 +1,8 @@
 from tkinter import *
+from tkinter import ttk
 
 root=Tk()
+root.title('Spyeworks Motion Settings')
 root.geometry("640x480")
 
 # sensor number used
@@ -23,54 +25,42 @@ active_delay_time=30
 idle_delay_state=False
 idle_delay_time=30
 
-class App:
+class MainApp:
     def __init__(self,master):
         # build spyeworks settings frame
-        self.spyeframe=Frame(master)
-        self.spyeframe.pack(side='top')
-        self.spyeTitle=Label(self.spyeframe,text="Spyeworks Settings", pady=3)
+        self.spyeTitle=Label(master,text="Spyeworks Settings", pady=3)
         self.spyeTitle.pack(side='top')
         # build player ip setting 
-        self.playerIPframe=Frame(self.spyeframe,width=300,bd=1)
-        self.playerIPframe.pack()
-        self.playerIPlabel=Label(self.playerIPframe,text="Player IP: ")
+        self.playerIPlabel=Label(master,text="Player IP: ")
         self.playerIPlabel.pack(side='left')
-        self.playerIPaddress=Label(self.playerIPframe,textvariable=player_IP)
+        self.playerIPaddress=Label(master,textvariable=player_IP)
         self.playerIPaddress.pack(side='left')
-        self.playerIPedit=Button(self.playerIPframe,text="EDIT",command=self.edit_playerIP)
-        self.playerIPedit.pack(side='right')
+        self.playerIPedit=Button(master,text="EDIT",command=self.edit_playerIP)
+        self.playerIPedit.pack(side='left')
         # build file path setting
-        self.filepathframe=Frame(self.spyeframe,width=300)
-        self.filepathframe.pack()
-        self.filepathlabel=Label(self.filepathframe,text="Filepath: ")
+        self.filepathlabel=Label(master,text="Filepath: ")
         self.filepathlabel.pack(side='left')
-        self.filepathaddress=Label(self.filepathframe,textvariable=listpath)
+        self.filepathaddress=Label(master,textvariable=listpath)
         self.filepathaddress.pack(side='left')
-        self.filepathedit=Button(self.filepathframe,text="EDIT",command=self.edit_filepath)
-        self.filepathedit.pack(side='right')
+        self.filepathedit=Button(master,text="EDIT",command=self.edit_filepath)
+        self.filepathedit.pack(side='left')
         # build active list setting
-        self.activelistframe=Frame(self.spyeframe,width=300)
-        self.activelistframe.pack()
-        self.activelistlabel=Label(self.activelistframe,text="Active Playlist: ")
+        self.activelistlabel=Label(master,text="Active Playlist: ")
         self.activelistlabel.pack(side='left')
-        self.activelistaddress=Label(self.activelistframe,textvariable=active_list)
+        self.activelistaddress=Label(master,textvariable=active_list)
         self.activelistaddress.pack(side='left')
-        self.activelistedit=Button(self.activelistframe,text="EDIT",command=self.edit_activelist)
-        self.activelistedit.pack(side='right')
+        self.activelistedit=Button(master,text="EDIT",command=self.edit_activelist)
+        self.activelistedit.pack(side='left')
         # build idle list setting
-        self.idlelistframe=Frame(self.spyeframe,width=300)
-        self.idlelistframe.pack()
-        self.idlelistlabel=Label(self.idlelistframe,text="Idle Playlist: ")
+        self.idlelistlabel=Label(master,text="Idle Playlist: ")
         self.idlelistlabel.pack(side='left')
-        self.idlelistaddress=Label(self.idlelistframe,textvariable=idle_list)
+        self.idlelistaddress=Label(master,textvariable=idle_list)
         self.idlelistaddress.pack(side='left')
-        self.idlelistedit=Button(self.idlelistframe,text="EDIT",command=self.edit_idlelist)
-        self.idlelistedit.pack(side='right')
+        self.idlelistedit=Button(master,text="EDIT",command=self.edit_idlelist)
+        self.idlelistedit.pack(side='left')
         
         # build sensor settings frame
-        self.sensorframe=Frame(master)
-        self.sensorframe.pack(side='top')
-        self.sensorTitle=Label(self.sensorframe,text="Sensor Settings")
+        self.sensorTitle=Label(master,text="Sensor Settings")
         self.sensorTitle.pack(side='top')
 
     def edit_playerIP(self):
@@ -85,7 +75,7 @@ class App:
     def edit_idlelist(self):
         idle_list.set("code 42")
 
-app=App(root)
+app=MainApp(root)
 
 #root.attributes('-fullscreen',True)
 #root.bind('<KeyPress>',onKeyPress)

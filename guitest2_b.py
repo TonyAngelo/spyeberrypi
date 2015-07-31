@@ -16,7 +16,6 @@ sensor_status.set("Idle")
 # ip address of player
 player_IP=StringVar()
 player_IP.set("10.10.9.51")
-new_IP=StringVar()
 # file path for playlists
 listpath=StringVar()
 listpath.set("c:/users/public/documents/spyeworks/content/")
@@ -32,46 +31,8 @@ active_delay_time=IntVar()
 idle_delay_state=IntVar()
 idle_delay_time=IntVar()
 
-def center(toplevel):
-    toplevel.update_idletasks()
-    w=toplevel.winfo_screenwidth()
-    h=toplevel.winfo_screenheight()
-    size=tuple(int(_)for _ in toplevel.geometry().split('+')[0].split('x'))
-    x=w/2-size[0]/2
-    y=h/2-size[1]/2
-    toplevel.geometry('%dx%d+%d+%d' % (size+(x,y)))
-
-def makeinfobox(parent,caption,width=None,**options):
-    Label(parent,text=caption).pack(padx=5,pady=5)
-    label=Label(parent,**options)
-    if width:
-        label.config(width=width)
-    label.pack(padx=5,pady=5)
-    return label
-
-def makeentry(parent,caption,width=None,**options):
-    Label(parent,text=caption).pack(padx=5,pady=5)
-    entry=Entry(parent,**options)
-    if width:
-        entry.config(width=width)
-    entry.pack(padx=5,pady=5)
-    return entry
-
 def edit_playerIP():
-    ippopup=Toplevel()
-    ippopup.geometry('%dx%d+%d+%d' % (300,200,250,125))
-    ippopup.title("Set Player IP")
-    curractual=makeinfobox(ippopup,"Current IP",textvariable=player_IP)
-    newactual=makeentry(ippopup,"New IP",textvariable=new_IP)
-    ok_btn=Button(ippopup,text="OK",command=lambda:validateIP(ippopup,newactual.get())).pack(padx=5,pady=5)
-    center(ippopup)
-
-#class editWindow():
-#    def __init__(self,parent):
-
-def validateIP(popup,ipaddy):
-    print(ipaddy)
-    popup.destroy()
+    pass
 
 def edit_filepath():
     pass
@@ -144,5 +105,4 @@ idledelayedit=Button(mainframe,text="EDIT",command=edit_idledelay).grid(column=E
 
 for child in mainframe.winfo_children(): child.grid_configure(padx=5,pady=5)
 
-center(root)
 root.mainloop()

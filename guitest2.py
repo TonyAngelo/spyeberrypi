@@ -5,8 +5,15 @@ root=Tk()
 root.title('Spyeworks Motion Settings')
 root.geometry("640x480")
 
+mainframe=ttk.Frame(root,padding="3 3 12 12")
+mainframe.grid(column=0,row=0,sticky=(N,W,E,S))
+mainframe.columnconfigure(0,weight=1)
+mainframe.rowconfigure(0,weight=1)
+
+##setup variables
 # sensor number used
-sensor=4
+sensor_status=StringVar()
+sensor_status.set("Idle")
 # ip address of player
 player_IP=StringVar()
 player_IP.set("10.10.9.51")
@@ -20,12 +27,83 @@ active_list.set("code 42")
 idle_list=StringVar()
 idle_list.set("altru health systems")
 #programatic delay
-active_delay_state=False
-active_delay_time=30
-idle_delay_state=False
-idle_delay_time=30
+active_delay_state=IntVar()
+active_delay_time=IntVar()
+idle_delay_state=IntVar()
+idle_delay_time=IntVar()
 
-mainframe=ttk.Frame(root,padding="3 3 12 12")
-mainframe.grid(column=0,row=0,sticky=(N,W,E,S))
-mainframe.columnconfigure(0,weight=1)
-mainframe.rowconfigure(0,weight=1)
+def edit_playerIP():
+    pass
+
+def edit_filepath():
+    pass
+
+def edit_activelist():
+    pass
+
+def edit_idlelist():
+    pass
+
+def edit_activedelay():
+    pass
+
+def edit_idledelay():
+    pass
+
+TITLE_COLUMN=3
+LABEL_COLUMN=1
+EDIT_COLUMN=5
+
+nRowNum=1
+playerSettingstitle=ttk.Label(mainframe,text="Spyeworks Player Settings")
+playerSettingstitle.grid(column=TITLE_COLUMN,row=nRowNum)
+
+nRowNum=2
+playerIPlabel=ttk.Label(mainframe,text="Player IP: ").grid(column=LABEL_COLUMN,row=nRowNum,sticky=E)
+playerIPactual=ttk.Label(mainframe,textvariable=player_IP).grid(column=3,row=nRowNum,sticky=W)
+playerIPedit=ttk.Button(mainframe,text="EDIT",command=edit_playerIP).grid(column=EDIT_COLUMN,row=nRowNum)
+
+nRowNum=3
+filepathlabel=ttk.Label(mainframe,text="Filepath: ").grid(column=LABEL_COLUMN,row=nRowNum,sticky=E)
+filepathactual=ttk.Label(mainframe,textvariable=listpath).grid(column=3,row=nRowNum,sticky=W)
+filepathedit=ttk.Button(mainframe,text="EDIT",command=edit_filepath).grid(column=EDIT_COLUMN,row=nRowNum)
+
+nRowNum=4
+activelistlabel=ttk.Label(mainframe,text="Active Playlist: ").grid(column=LABEL_COLUMN,row=nRowNum,sticky=E)
+activelistactual=ttk.Label(mainframe,textvariable=active_list).grid(column=3,row=nRowNum,sticky=W)
+activelistedit=ttk.Button(mainframe,text="EDIT",command=edit_activelist).grid(column=EDIT_COLUMN,row=nRowNum)
+
+nRowNum=5
+idlelistlabel=ttk.Label(mainframe,text="Idle Playlist: ").grid(column=LABEL_COLUMN,row=nRowNum,sticky=E)
+idlelistactual=ttk.Label(mainframe,textvariable=idle_list).grid(column=3,row=nRowNum,sticky=W)
+idlelistedit=ttk.Button(mainframe,text="EDIT",command=edit_idlelist).grid(column=EDIT_COLUMN,row=nRowNum)
+
+nRowNum=6
+divider=ttk.Frame(mainframe,height=4).grid(columnspan=5,row=nRowNum)
+
+nRowNum=7
+sensorSettingstitle=ttk.Label(mainframe,text="Motion Sensor Settings")
+sensorSettingstitle.grid(column=TITLE_COLUMN,row=nRowNum)
+
+nRowNum=8
+setsensorlabel=ttk.Label(mainframe,text="Sensor Status: ").grid(column=LABEL_COLUMN,row=nRowNum,sticky=E)
+setsensoractual=ttk.Label(mainframe,textvariable=sensor_status).grid(column=3,row=nRowNum,sticky=W)
+
+nRowNum=9
+activedelaylabel=ttk.Label(mainframe,text="Active Delay Enable").grid(column=LABEL_COLUMN,row=nRowNum,sticky=E)
+activedelaycheck=ttk.Checkbutton(mainframe,variable=active_delay_state).grid(column=2,row=nRowNum,sticky=W)
+activedelaytimelabel=ttk.Label(mainframe,text="Delay Time").grid(column=3,row=nRowNum,sticky=E)
+activedelaytime=ttk.Label(mainframe,textvariable=str(active_delay_time)).grid(column=4,row=nRowNum,sticky=W)
+activedelayedit=ttk.Button(mainframe,text="EDIT",command=edit_activedelay).grid(column=EDIT_COLUMN,row=nRowNum)
+
+nRowNum=10
+idledelaylabel=ttk.Label(mainframe,text="Idle Delay Enable").grid(column=LABEL_COLUMN,row=nRowNum,sticky=E)
+idledelaycheck=ttk.Checkbutton(mainframe,variable=idle_delay_state).grid(column=2,row=nRowNum,sticky=W)
+idledelaytimelabel=ttk.Label(mainframe,text="Delay Time").grid(column=3,row=nRowNum,sticky=E)
+idledelaytime=ttk.Label(mainframe,textvariable=str(idle_delay_time)).grid(column=4,row=nRowNum,sticky=W)
+idledelayedit=ttk.Button(mainframe,text="EDIT",command=edit_idledelay).grid(column=EDIT_COLUMN,row=nRowNum)
+
+
+for child in mainframe.winfo_children(): child.grid_configure(padx=5,pady=5)
+
+root.mainloop()

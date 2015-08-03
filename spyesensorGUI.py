@@ -31,7 +31,7 @@ class Observable:
         self.data = None
 
 class Sensor(Observable):
-    def __init__(self, initialValue="Off", sensor=1):
+    def __init__(self, sensor=1, initialValue="Off"):
         Observable.__init__(self,initialValue)
         self.sensor=sensor
         GPIO.setmode(GPIO.BCM)
@@ -43,6 +43,35 @@ class Sensor(Observable):
             self.set("On")
         else:
             self.set("Off")
+
+class Spyeworks(Observable):
+    def __init__(self,ipaddy,filepath,active,idle,initialValue="Offline"):
+        Observable.__init__(self,initialValue)
+        self.ipaddy=ipaddy
+        self.port=8900
+        self.filepath=filepath
+        self.active=active
+        self.idle=idle
+        self.login()
+
+    def login(self,cmd=""):
+        s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        s.connect((self.ipaddy,self.port))
+        s.send(b'LOGIN\r\n')
+        msg=s.recv(1024)
+        if(msg.decode('ascii')[:2]=='OK'):
+            self.set("Online")
+            if len(cmd)>0:
+                s.send(cmd.encode())
+        else:
+            self.set("Offline")
+        s.close()
+
+    def playActive(self):
+        login('SPL'+self.filepath+self.active+'.dml\r\n')
+
+    def playIdle(self):
+        login('SPL'+self.filepath+self.idle+'.dml\r\n')
 
 # model
 class Model:
@@ -76,7 +105,11 @@ class Model:
         f.close()
 
         # get the current status of the sensor variable
-        self.sensorstate = Sensor("Off",4)
+        self.sensorstate = Sensor(4)
+
+        # initiate the spyeworks player
+        self.spyeworks = Spyeworks(self.ipaddy.get(),self.filepath.get(),
+                                   self.active.get(),self.idle.get())
 
     ###############################################################
     ### Methods for the controller to update variables in the model
@@ -85,18 +118,26 @@ class Model:
     def SetIP(self, value):
         self.ipaddy.set(value)
         self.UpdateTextFile()
+        # also update the spyeworks player
+        self.spyeworks.ipaddy=value
 
     def SetFilepath(self, value):
         self.filepath.set(value)
         self.UpdateTextFile()
+        # also update the spyeworks player
+        self.spyeworks.filepath=value
 
     def SetActive(self, value):
         self.active.set(value)
         self.UpdateTextFile()
+        # also update the spyeworks player
+        self.spyeworks.active=value
 
     def SetIdle(self, value):
         self.idle.set(value)
         self.UpdateTextFile()
+        # also update the spyeworks player
+        self.spyeworks.idle=value
 
     def SetSensorEnable(self,value):
         self.sensorenable.set(value)
@@ -157,6 +198,14 @@ class View(tk.Toplevel):
         nRowNum=nRowNum+1
         self.spyetitlelabel = tk.Label(self, text='Spyeworks Settings')
         self.spyetitlelabel.grid(column=VALUE_COL,row=nRowNum)
+        # spacer
+        nRowNum=nRowNum+1
+        self.titlespacerlabel = tk.Label(self, text='     ')
+        self.titlespacerlabel.grid(column=SPACE_COL,row=nRowNum)
+        # spyeworks online status
+        nRowNum=nRowNum+1
+        self.spyeworksonline = tk.Label(self)
+        self.spyeworksonline.grid(column=VALUE_COL,row=nRowNum)
         # spacer
         nRowNum=nRowNum+1
         self.titlespacerlabel = tk.Label(self, text='     ')
@@ -233,6 +282,10 @@ class View(tk.Toplevel):
     #####################################################################
     ### Methods used by the controller for updating variables in the view
     #####################################################################
+
+    # changes the ip address displayed to current 
+    def updateOnline(self, value):
+        self.spyeworksonline.config(text="Player is "+value) 
 
     # changes the ip address displayed to current 
     def updateIP(self, value):
@@ -363,6 +416,7 @@ class Controller:
 
         # create modle and setup callbacks
         self.model = Model()
+        self.model.spyeworks.addCallback(self.updatePlayerOnline)
         self.model.ipaddy.addCallback(self.updateIP)
         self.model.filepath.addCallback(self.updateFilepath)
         self.model.active.addCallback(self.updateActive)
@@ -392,6 +446,7 @@ class Controller:
         self.view.editIdleDelayTimeButton.config(command=self.editIdleDelayTime)
 
         # update variables with data from model
+        self.updatePlayerOnline(self.model.spyeworks.get())
         self.updateIP(self.model.ipaddy.get())
         self.updateFilepath(self.model.filepath.get())
         self.updateActive(self.model.active.get())
@@ -465,6 +520,10 @@ class Controller:
     #################################
     ### Methods for updating the view
     #################################
+
+    # updates the player online status in the view
+    def updatePlayerOnline(self, value):
+        self.view.updateOnline(value)
 
     # updates the ip address in the view
     def updateIP(self, value):

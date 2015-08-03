@@ -1,4 +1,8 @@
+# load imports
 import tkinter as tk
+import RPi.GPIO as GPIO
+import time
+import socket
 
 # model object
 class Observable:
@@ -25,6 +29,20 @@ class Observable:
 
     def unset(self):
         self.data = None
+
+class Sensor(Observable):
+    def __init__(self, initialValue="Off", sensor=1):
+        Observable.__init__(self,initialValue)
+        self.sensor=sensor
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
+        GPIO.add_event_detect(self.sensor,GPIO.BOTH,self.sensorChange)
+
+    def sensorChange(self,value):
+        if GPIO.input(value):
+            self.set("On")
+        else:
+            self.set("Off")
 
 # model
 class Model:
@@ -58,7 +76,7 @@ class Model:
         f.close()
 
         # get the current status of the sensor variable
-        self.sensorstate = Observable("Off")
+        self.sensorstate = Sensor("Off",4)
 
     ###############################################################
     ### Methods for the controller to update variables in the model

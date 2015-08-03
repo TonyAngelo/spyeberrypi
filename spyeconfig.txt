@@ -4,6 +4,6 @@ active
 idle
 T
 F
-15
+30
 F
-15
+30

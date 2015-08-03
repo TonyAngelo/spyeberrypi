@@ -1,3 +1,31 @@
+#########################################################################
+#########################################################################
+#
+# Spyeworks - Motion Sensor Interface - v0.9
+#
+# This program uses the Rasberry Pi to track a connected motion sensor 
+# and based on it's state change the playlist on a Spyeworks Digital 
+# Signage Player from an Active list to an Idle list.
+#
+# by Tony Petrangelo
+# tonypetrangelo@gmail.com
+#
+#########################################################################
+#########################################################################
+#
+# To do:
+# 
+# 1) integrate with spyeworks
+#   a) login routines, ipaddress good/bad status on the view
+#   b) playlist routines, allow use to select from available lists
+#       on the active, idle selection popups
+#   c) show currently playing playlist
+#
+# 2) validate user inputs
+#
+#########################################################################
+#########################################################################
+
 # load imports
 import tkinter as tk
 import RPi.GPIO as GPIO
@@ -30,6 +58,7 @@ class Observable:
     def unset(self):
         self.data = None
 
+# sensor instance of the observable class
 class Sensor(Observable):
     def __init__(self, sensor=1, initialValue="Off"):
         Observable.__init__(self,initialValue)

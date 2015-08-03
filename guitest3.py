@@ -26,13 +26,13 @@ class Observable:
     def unset(self):
         self.data = None
 
-
 # model
 class Model:
     def __init__(self):
         #check to see if values are in text file, otherwise load defaults
         try:
             f=open('spyeconfig.txt','r')
+        # problem opening the file, load the default values
         except:
             self.ipaddy = Observable("192.168.1.110")
             self.filepath = Observable("c:/users/public/documents/spyeworks/content/")
@@ -52,9 +52,15 @@ class Model:
             self.activedelaytime = Observable(f.readline()[:-1])
             self.idledelay = Observable(f.readline()[:-1])
             self.idledelaytime = Observable(f.readline()[:-1])
-
+        # close the file
         f.close()
+
+        # get the current status of the sensor variable
         self.sensor = Observable("Off")
+
+    ###############################################################
+    ### Methods for the controller to update variables in the model
+    ###############################################################
 
     def SetIP(self, value):
         self.ipaddy.set(value)
@@ -88,6 +94,10 @@ class Model:
         self.idledelaytime.set(value)
         self.UpdateTextFile()
 
+    ##########################################################
+    ### Method for writing current model values to a text file
+    ##########################################################
+
     def UpdateTextFile(self):
         # write the model to a text file for tracking variable changes
         f=open('spyeconfig.txt','w+')
@@ -102,7 +112,10 @@ class View(tk.Toplevel):
         tk.Toplevel.__init__(self, master)
         self.protocol('WM_DELETE_WINDOW', self.master.destroy)
         self.title('Spyeworks Motion Settings')
-        self.geometry("640x480")
+        self.geometry("800x600")
+        self.grid_columnconfigure(7, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
         # grid constants
         SPACE_COL=0
         LABEL_COL=1
@@ -126,32 +139,32 @@ class View(tk.Toplevel):
         self.titlespacerlabel.grid(column=SPACE_COL,row=nRowNum)
         # ip address section
         nRowNum=nRowNum+1
-        tk.Label(self, text='IP Address').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E)
-        self.IPActual = tk.Label(self, width=VALUE_WIDTH)
+        tk.Label(self, text='IP Address: ').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
+        self.IPActual = tk.Label(self)
         self.IPActual.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
         self.editIPButton = tk.Button(self, text='EDIT', width=EDIT_WIDTH)
-        self.editIPButton.grid(column=BTN_COL,row=nRowNum)
+        self.editIPButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
         # filepath section
         nRowNum=nRowNum+1
-        tk.Label(self, text='Filepath').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E)
-        self.FilepathActual = tk.Label(self, width=VALUE_WIDTH)
+        tk.Label(self, text='Filepath: ').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
+        self.FilepathActual = tk.Label(self)
         self.FilepathActual.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
         self.editFilepathButton = tk.Button(self, text='EDIT', width=EDIT_WIDTH)
-        self.editFilepathButton.grid(column=BTN_COL,row=nRowNum)
+        self.editFilepathButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
         # active section
         nRowNum=nRowNum+1
-        tk.Label(self, text='Active').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E)
-        self.ActiveActual = tk.Label(self, width=VALUE_WIDTH)
+        tk.Label(self, text='Active List: ').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
+        self.ActiveActual = tk.Label(self)
         self.ActiveActual.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
         self.editActiveButton = tk.Button(self, text='EDIT', width=EDIT_WIDTH)
-        self.editActiveButton.grid(column=BTN_COL,row=nRowNum)
+        self.editActiveButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
         # idle section
         nRowNum=nRowNum+1
-        tk.Label(self, text='Idle').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E)
-        self.IdleActual = tk.Label(self, width=VALUE_WIDTH)
+        tk.Label(self, text='Idle List: ').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
+        self.IdleActual = tk.Label(self)
         self.IdleActual.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
         self.editIdleButton = tk.Button(self, text='EDIT', width=EDIT_WIDTH)
-        self.editIdleButton.grid(column=BTN_COL,row=nRowNum)
+        self.editIdleButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
         # spacer
         nRowNum=nRowNum+1
         self.titlespacer2label = tk.Label(self, text='     ')
@@ -163,33 +176,36 @@ class View(tk.Toplevel):
         # spacer
         nRowNum=nRowNum+1
         self.titlespacerlabel = tk.Label(self, text='     ')
-        self.titlespacerlabel.grid(column=SPACE_COL,row=nRowNum)
+        self.titlespacerlabel.grid(column=5,row=nRowNum)
         # sensor status
         nRowNum=nRowNum+1
-        tk.Label(self, text='Sensor').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E)
-        self.SensorStatus = tk.Label(self, width=VALUE_WIDTH)
+        tk.Label(self, text='Sensor: ').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
+        self.SensorStatus = tk.Label(self)
         self.SensorStatus.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
         # active delay settings
         nRowNum=nRowNum+1
-        tk.Label(self,text="Active Delay Enable").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E)
+        tk.Label(self,text="Active Delay Enable").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
         self.ActiveDelayCheck=tk.Checkbutton(self,onvalue="T", offvalue="F")
         self.ActiveDelayCheck.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
-        tk.Label(self,text="Delay Time").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E)
+        tk.Label(self,text="Delay Time: ").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E)
         self.ActiveDelayTime=tk.Label(self)
         self.ActiveDelayTime.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W)
         self.editActiveDelayTimeButton=tk.Button(self,text="EDIT", width=EDIT_WIDTH)
-        self.editActiveDelayTimeButton.grid(column=BTN_COL,row=nRowNum)
+        self.editActiveDelayTimeButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
         # idle delay settings
         nRowNum=nRowNum+1
-        tk.Label(self,text="Idle Delay Enable").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E)
+        tk.Label(self,text="Idle Delay Enable").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
         self.IdleDelayCheck=tk.Checkbutton(self,onvalue="T", offvalue="F")
         self.IdleDelayCheck.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
-        tk.Label(self,text="Delay Time").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E)
+        tk.Label(self,text="Delay Time: ").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E)
         self.IdleDelayTime=tk.Label(self)
         self.IdleDelayTime.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W)
         self.editIdleDelayTimeButton=tk.Button(self,text="EDIT", width=EDIT_WIDTH)
-        self.editIdleDelayTimeButton.grid(column=BTN_COL,row=nRowNum)
+        self.editIdleDelayTimeButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
 
+    #####################################################################
+    ### Methods used by the controller for updating variables in the view
+    #####################################################################
 
     # changes the ip address displayed to current 
     def updateIP(self, value):
@@ -211,26 +227,16 @@ class View(tk.Toplevel):
     def updateSensor(self, value):
         self.SensorStatus.config(text=value) 
 
-    # # changes active list displayed to current
-    # def updateActiveDelay(self, value):
-    #     # self.ActiveDelayCheck.config(text=value) 
-    #     pass
-
     # changes active list delay time displayed to current
     def updateActiveDelayTime(self, value):
         self.ActiveDelayTime.config(text=value)
-
-    # # changes idle list displayed to current
-    # def updateIdleDelay(self, value):
-    #     # self.IdleDelayCheck.config(text=value) 
-    #     pass 
 
     # changes idle list delay time displayed to current
     def updateIdleDelayTime(self, value):
         self.IdleDelayTime.config(text=value) 
 
 
-# basic popup class for edting variables
+# basic popup class for editing variables
 class BasicChangerWidget(tk.Toplevel):
     def __init__(self, master, app, title, currlabel, newlabel):
         # initiate the popup as a toplevel object, keep track of the app and set the geometry and title
@@ -251,7 +257,6 @@ class BasicChangerWidget(tk.Toplevel):
         self.okButton = tk.Button(self, text='OK', width=8)
         self.okButton.pack(padx=5,pady=5)
 
-
 # popup window for setting the players ip address
 class IPChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
@@ -263,7 +268,6 @@ class IPChangerWidget(BasicChangerWidget):
         # if IP is valid
         self.app.newIP(self.value.get())
         self.destroy()
-
 
 # popup window for setting the filepath
 class FilepathChangerWidget(BasicChangerWidget):
@@ -277,7 +281,6 @@ class FilepathChangerWidget(BasicChangerWidget):
         self.app.newFilepath(self.value.get())
         self.destroy()
 
-
 # popup window for setting the active list
 class ActiveChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
@@ -289,7 +292,6 @@ class ActiveChangerWidget(BasicChangerWidget):
         # if list name is valid
         self.app.newActive(self.value.get())
         self.destroy()
-
 
 # popup window for setting the idle list
 class IdleChangerWidget(BasicChangerWidget):
@@ -303,7 +305,6 @@ class IdleChangerWidget(BasicChangerWidget):
         self.app.newIdle(self.value.get())
         self.destroy()
 
-
 # popup window for setting the active list delay time
 class ActiveDelayTimeChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
@@ -315,7 +316,6 @@ class ActiveDelayTimeChangerWidget(BasicChangerWidget):
         # if delay time is valid
         self.app.newActiveDelayTime(self.value.get())
         self.destroy()
-
 
 # popup window for setting the idle list delay time
 class IdleDelayTimeChangerWidget(BasicChangerWidget):
@@ -333,6 +333,7 @@ class IdleDelayTimeChangerWidget(BasicChangerWidget):
 # controller, talks to views and models
 class Controller:
     def __init__(self, root):
+
         # create modle and setup callbacks
         self.model = Model()
         self.model.ipaddy.addCallback(self.updateIP)
@@ -340,11 +341,10 @@ class Controller:
         self.model.active.addCallback(self.updateActive)
         self.model.idle.addCallback(self.updateIdle)
         self.model.sensor.addCallback(self.updateSensor)
-        # self.model.activedelay.addCallback(self.updateActiveDelay)
         self.model.activedelaytime.addCallback(self.updateActiveDelayTime)
-        # self.model.idledelay.addCallback(self.updateIdleDelay)
         self.model.idledelaytime.addCallback(self.updateIdleDelayTime)
 
+        # create variables for tracking checkboxs
         self.ActiveDelay=tk.StringVar()
         self.ActiveDelay.set(self.model.activedelay.get())
         self.IdleDelay=tk.StringVar()
@@ -361,17 +361,19 @@ class Controller:
         self.view.IdleDelayCheck.config(variable=self.IdleDelay,command=self.updateIdleDelay)
         self.view.editIdleDelayTimeButton.config(command=self.editIdleDelayTime)
 
-        # update variables
+        # update variables with data from model
         self.updateIP(self.model.ipaddy.get())
         self.updateFilepath(self.model.filepath.get())
         self.updateActive(self.model.active.get())
         self.updateIdle(self.model.idle.get())
         self.updateSensor(self.model.sensor.get())
-        # self.updateActiveDelay(self.model.activedelay.get())
         self.updateActiveDelayTime(self.model.activedelaytime.get())
-        # self.updateIdleDelay(self.model.idledelay.get())
         self.updateIdleDelayTime(self.model.idledelaytime.get())
-        
+    
+    #################################################################
+    ### Methods for launching the changer popup for changing settings
+    #################################################################
+
     # launches the popup for editing the players ip address
     def editIP(self):
         self.editIP = IPChangerWidget(self.view,self,"Set IP Address","Current IP", "New IP")
@@ -402,6 +404,10 @@ class Controller:
         self.editIdleDelayTime = IdleDelayTimeChangerWidget(self.view,self,"Set Idle Delay Time","Current Idle Delay Time", "New Idle Delay Time")
         self.editIdleDelayTime.curractual.config(text=self.model.idledelaytime.get())
 
+    ##################################
+    ### Methods for updating the model
+    ##################################
+
     # sets the new ip address returned from the validate ip function
     def newIP(self, value):
         self.model.SetIP(value)
@@ -426,6 +432,10 @@ class Controller:
     def newIdleDelayTime(self, value):
         self.model.SetIdleDelayTime(value)
     
+    #################################
+    ### Methods for updating the view
+    #################################
+
     # updates the ip address in the view
     def updateIP(self, value):
         self.view.updateIP(value)

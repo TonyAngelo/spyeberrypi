@@ -38,6 +38,7 @@ class Model:
             self.filepath = Observable("c:/users/public/documents/spyeworks/content/")
             self.active = Observable("active")
             self.idle = Observable("idle")
+            self.sensorenable = Observable("T")
             self.activedelay = Observable("F")
             self.activedelaytime = Observable("30")
             self.idledelay = Observable("F")
@@ -48,6 +49,7 @@ class Model:
             self.filepath = Observable(f.readline()[:-1])
             self.active = Observable(f.readline()[:-1])
             self.idle = Observable(f.readline()[:-1])
+            self.sensorenable = Observable(f.readline()[:-1])
             self.activedelay = Observable(f.readline()[:-1])
             self.activedelaytime = Observable(f.readline()[:-1])
             self.idledelay = Observable(f.readline()[:-1])
@@ -56,7 +58,7 @@ class Model:
         f.close()
 
         # get the current status of the sensor variable
-        self.sensor = Observable("Off")
+        self.sensorstate = Observable("Off")
 
     ###############################################################
     ### Methods for the controller to update variables in the model
@@ -76,6 +78,10 @@ class Model:
 
     def SetIdle(self, value):
         self.idle.set(value)
+        self.UpdateTextFile()
+
+    def SetSensorEnable(self,value):
+        self.sensorenable.set(value)
         self.UpdateTextFile()
 
     def SetActiveDelay(self, value):
@@ -101,7 +107,7 @@ class Model:
     def UpdateTextFile(self):
         # write the model to a text file for tracking variable changes
         f=open('spyeconfig.txt','w+')
-        f.write(self.ipaddy.get()+'\n'+self.filepath.get()+'\n'+self.active.get()+'\n'+self.idle.get()+'\n'+
+        f.write(self.ipaddy.get()+'\n'+self.filepath.get()+'\n'+self.active.get()+'\n'+self.idle.get()+'\n'+self.sensorenable.get()+'\n'+
             self.activedelay.get()+'\n'+self.activedelaytime.get()+'\n'+self.idledelay.get()+'\n'+self.idledelaytime.get()+'\n')
         f.close()
 
@@ -120,9 +126,9 @@ class View(tk.Toplevel):
         SPACE_COL=0
         LABEL_COL=1
         VALUE_COL=2
-        LABEL2_COL=3
-        VALUE2_COL=4
-        BTN_COL=6
+        LABEL2_COL=2
+        VALUE2_COL=3
+        BTN_COL=4
         VALUE_WIDTH=50
         EDIT_WIDTH=8
         # spacer
@@ -179,17 +185,20 @@ class View(tk.Toplevel):
         self.titlespacerlabel.grid(column=5,row=nRowNum)
         # sensor status
         nRowNum=nRowNum+1
-        tk.Label(self, text='Sensor: ').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
+        tk.Label(self, text='Sensor Enabled: ').grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
+        self.SensorEnable = tk.Checkbutton(self,onvalue="T", offvalue="F")
+        self.SensorEnable.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
+        tk.Label(self, text='Sensor State: ').grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
         self.SensorStatus = tk.Label(self)
-        self.SensorStatus.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
+        self.SensorStatus.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W)
         # active delay settings
         nRowNum=nRowNum+1
         tk.Label(self,text="Active Delay Enable").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
         self.ActiveDelayCheck=tk.Checkbutton(self,onvalue="T", offvalue="F")
         self.ActiveDelayCheck.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
-        tk.Label(self,text="Delay Time: ").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E)
+        tk.Label(self,text="Active Delay Time: ").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
         self.ActiveDelayTime=tk.Label(self)
-        self.ActiveDelayTime.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W)
+        self.ActiveDelayTime.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W,padx=5,pady=5)
         self.editActiveDelayTimeButton=tk.Button(self,text="EDIT", width=EDIT_WIDTH)
         self.editActiveDelayTimeButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
         # idle delay settings
@@ -197,9 +206,9 @@ class View(tk.Toplevel):
         tk.Label(self,text="Idle Delay Enable").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
         self.IdleDelayCheck=tk.Checkbutton(self,onvalue="T", offvalue="F")
         self.IdleDelayCheck.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
-        tk.Label(self,text="Delay Time: ").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E)
+        tk.Label(self,text="Idle Delay Time: ").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
         self.IdleDelayTime=tk.Label(self)
-        self.IdleDelayTime.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W)
+        self.IdleDelayTime.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W,padx=5,pady=5)
         self.editIdleDelayTimeButton=tk.Button(self,text="EDIT", width=EDIT_WIDTH)
         self.editIdleDelayTimeButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
 
@@ -340,7 +349,7 @@ class Controller:
         self.model.filepath.addCallback(self.updateFilepath)
         self.model.active.addCallback(self.updateActive)
         self.model.idle.addCallback(self.updateIdle)
-        self.model.sensor.addCallback(self.updateSensor)
+        self.model.sensorstate.addCallback(self.updateSensorState)
         self.model.activedelaytime.addCallback(self.updateActiveDelayTime)
         self.model.idledelaytime.addCallback(self.updateIdleDelayTime)
 
@@ -349,6 +358,8 @@ class Controller:
         self.ActiveDelay.set(self.model.activedelay.get())
         self.IdleDelay=tk.StringVar()
         self.IdleDelay.set(self.model.idledelay.get())
+        self.SensorEnable=tk.StringVar()
+        self.SensorEnable.set(self.model.sensorenable.get())
 
         # create main view and link edit btns to funcs
         self.view = View(root)
@@ -356,6 +367,7 @@ class Controller:
         self.view.editFilepathButton.config(command=self.editFilepath)
         self.view.editActiveButton.config(command=self.editActive)
         self.view.editIdleButton.config(command=self.editIdle)
+        self.view.SensorEnable.config(variable=self.SensorEnable,command=self.updateSensorEnable)
         self.view.ActiveDelayCheck.config(variable=self.ActiveDelay,command=self.updateActiveDelay)
         self.view.editActiveDelayTimeButton.config(command=self.editActiveDelayTime)
         self.view.IdleDelayCheck.config(variable=self.IdleDelay,command=self.updateIdleDelay)
@@ -366,7 +378,7 @@ class Controller:
         self.updateFilepath(self.model.filepath.get())
         self.updateActive(self.model.active.get())
         self.updateIdle(self.model.idle.get())
-        self.updateSensor(self.model.sensor.get())
+        self.updateSensorState(self.model.sensorstate.get())
         self.updateActiveDelayTime(self.model.activedelaytime.get())
         self.updateIdleDelayTime(self.model.idledelaytime.get())
     
@@ -453,13 +465,16 @@ class Controller:
         self.view.updateIdle(value)
 
     # updates the sensor status in the view
-    def updateSensor(self, value):
+    def updateSensorEnable(self):
+        self.model.SetSensorEnable(self.SensorEnable.get())
+
+    # updates the sensor status in the view
+    def updateSensorState(self, value):
         self.view.updateSensor(value)
 
     # updates the active delay in the view
     def updateActiveDelay(self):
         self.model.SetActiveDelay(self.ActiveDelay.get())
-        print(self.ActiveDelay.get())
 
     # updates the active delay time in the view
     def updateActiveDelayTime(self, value):
@@ -468,7 +483,6 @@ class Controller:
     # updates the idle delay in the view
     def updateIdleDelay(self):
         self.model.SetIdleDelay(self.IdleDelay.get())
-        print(self.IdleDelay.get())
 
     # updates the idle delay time in the view
     def updateIdleDelayTime(self, value):

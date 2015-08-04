@@ -19,7 +19,7 @@
 #   X) login routines, ipaddress good/bad status on the view
 #   b) TEST change lists on sensor input 
 #   c) show currently playing playlist
-#   d) playlist routines, allow use to select from available lists
+#   d) playlist routines; allow user to select from available lists
 #       on the active, idle selection popups
 #
 #########################################################################
@@ -29,11 +29,10 @@ dev_mode=1
 
 # load imports
 import tkinter as tk # for gui
-import time # for timed waits
+from threading import Timer # for delay timers
 import socket # for connecting with ip devices
 import ipaddress # for validating ip addresses
 import re # regex for validating text feilds
-
 if dev_mode==0:
     import RPi.GPIO as GPIO # for using sensor inputs
 
@@ -212,7 +211,6 @@ class Model:
             self.activedelay.get()+'\n'+self.activedelaytime.get()+'\n'+self.idledelay.get()+'\n'+self.idledelaytime.get()+'\n')
         f.close()
 
-
 # main view
 class View(tk.Toplevel):
     def __init__(self, master):
@@ -365,7 +363,6 @@ class View(tk.Toplevel):
     def updateIdleDelayTime(self, value):
         self.IdleDelayTime.config(text=value) 
 
-
 # basic popup class for editing variables
 class BasicChangerWidget(tk.Toplevel):
     def __init__(self, master, app, title, currlabel, newlabel):
@@ -407,7 +404,6 @@ class IPChangerWidget(BasicChangerWidget):
             self.app.newIP(self.value.get())
             self.destroy()
         
-
 # popup window for setting the filepath
 class FilepathChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
@@ -434,6 +430,7 @@ class ActiveChangerWidget(BasicChangerWidget):
         BasicChangerWidget.__init__(self, master, app, title, currlabel, newlabel)
         self.geometry('%dx%d+%d+%d' % (300,200,350,250))
         self.okButton.config(command=self.validateActive)
+        self.newentry.config(width=250)
 
     # validates the value entered to see if it is a valid active list
     def validateActive(self):
@@ -453,6 +450,7 @@ class IdleChangerWidget(BasicChangerWidget):
         BasicChangerWidget.__init__(self, master, app, title, currlabel, newlabel)
         self.geometry('%dx%d+%d+%d' % (300,200,350,250))
         self.okButton.config(command=self.validateIdle)
+        self.newentry.config(width=250)
 
     # validates the value entered to see if it is a valid idle list
     def validateIdle(self):
@@ -504,7 +502,6 @@ class IdleDelayTimeChangerWidget(BasicChangerWidget):
             # throw an error message
             self.errormsg.config(text=self.value.get()+" is not a valid delay time.")
 
-
 # controller, talks to views and models
 class Controller:
     def __init__(self, root):
@@ -520,13 +517,14 @@ class Controller:
         self.model.activedelaytime.addCallback(self.updateActiveDelayTime)
         self.model.idledelaytime.addCallback(self.updateIdleDelayTime)
 
-        # create variables for tracking checkboxs
+        # create variables for tracking checkboxs and timers
         self.ActiveDelay=tk.StringVar()
         self.ActiveDelay.set(self.model.activedelay.get())
         self.IdleDelay=tk.StringVar()
         self.IdleDelay.set(self.model.idledelay.get())
         self.SensorEnable=tk.StringVar()
         self.SensorEnable.set(self.model.sensorenable.get())
+        self.sensorTimer=Timer(1, self.dummyFunc, ())
 
         # create main view and link edit btns to funcs
         self.view = View(root)
@@ -639,22 +637,38 @@ class Controller:
     # updates the sensor status in the view
     def updateSensorEnable(self):
         self.model.SetSensorEnable(self.SensorEnable.get())
+        # if the sensor has been disabled, cancel any active timers
+        if self.SensorEnable.get()=="F":
+            if self.sensorTimer.isAlive():
+                self.sensorTimer.cancel()
+
+    # dummy function for passing to timer thread
+    def dummyFunc(self):
+        pass
 
     # handles updates to the sensor status
     def updateSensorState(self, value):
         # updates the sensor status in the view
         self.view.updateSensor(value)
         # sensor effects
-        if value=="On" and self.SensorEnable.get()=="T":
-            if self.model.activedelay.get()=="T":
-                Timer(int(self.model.activedelaytime.get()), self.model.spyeworks.playActive, ()).start()
-            else:   
-                self.model.spyeworks.playActive()
-        elif value=="Off" and self.SensorEnable.get()=="T":
-            if self.model.idledelay.get()=="T":
-                Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ()).start()
-            else:
-                self.model.spyeworks.playIdle()
+        if self.sensorTimer.isAlive():
+            self.sensorTimer.cancel()
+        # if sensor is enabled
+        if self.SensorEnable.get()=="T":
+            # if the sensor is active
+            if value=="On":
+                if self.model.activedelay.get()=="T":
+                    self.sensorTimer=Timer(int(self.model.activedelaytime.get()), self.model.spyeworks.playActive, ())
+                    self.sensorTimer.start()
+                else:   
+                    self.model.spyeworks.playActive()
+            # if the sensor is inactive
+            elif value=="Off":
+                if self.model.idledelay.get()=="T":
+                    self.sensorTimer=Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ())
+                    self.sensorTimer.start()
+                else:
+                    self.model.spyeworks.playIdle()
 
     # updates the active delay in the view
     def updateActiveDelay(self):
@@ -671,7 +685,6 @@ class Controller:
     # updates the idle delay time in the view
     def updateIdleDelayTime(self, value):
         self.view.updateIdleDelayTime(value)
-
 
 if __name__ == '__main__':
     root = tk.Tk()

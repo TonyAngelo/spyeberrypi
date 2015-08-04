@@ -17,7 +17,7 @@
 # 
 # 1) integrate with spyeworks
 #   X) login routines, ipaddress good/bad status on the view
-#   b) change lists on sensor input
+#   b) TEST change lists on sensor input 
 #   c) show currently playing playlist
 #   d) playlist routines, allow use to select from available lists
 #       on the active, idle selection popups
@@ -110,10 +110,10 @@ class Spyeworks(Observable):
             self.set("Offline")
 
     def playActive(self):
-        login('SPL'+self.filepath+self.active+'.dml\r\n')
+        self.login('SPL'+self.filepath+self.active+'.dml\r\n')
 
     def playIdle(self):
-        login('SPL'+self.filepath+self.idle+'.dml\r\n')
+        self.login('SPL'+self.filepath+self.idle+'.dml\r\n')
 
 # model
 class Model:
@@ -640,9 +640,21 @@ class Controller:
     def updateSensorEnable(self):
         self.model.SetSensorEnable(self.SensorEnable.get())
 
-    # updates the sensor status in the view
+    # handles updates to the sensor status
     def updateSensorState(self, value):
+        # updates the sensor status in the view
         self.view.updateSensor(value)
+        # sensor effects
+        if value=="On" and self.SensorEnable.get()=="T":
+            if self.model.activedelay.get()=="T":
+                Timer(int(self.model.activedelaytime.get()), self.model.spyeworks.playActive, ()).start()
+            else:   
+                self.model.spyeworks.playActive()
+        elif value=="Off" and self.SensorEnable.get()=="T":
+            if self.model.idledelay.get()=="T":
+                Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ()).start()
+            else:
+                self.model.spyeworks.playIdle()
 
     # updates the active delay in the view
     def updateActiveDelay(self):

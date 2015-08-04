@@ -16,23 +16,28 @@
 # To do:
 # 
 # 1) integrate with spyeworks
-#   a) login routines, ipaddress good/bad status on the view
-#   b) playlist routines, allow use to select from available lists
-#       on the active, idle selection popups
+#   X) login routines, ipaddress good/bad status on the view
+#   b) change lists on sensor input
 #   c) show currently playing playlist
-#
-# 2) validate user inputs
+#   d) playlist routines, allow use to select from available lists
+#       on the active, idle selection popups
 #
 #########################################################################
 #########################################################################
+
+dev_mode=1
 
 # load imports
-import tkinter as tk
-import RPi.GPIO as GPIO
-import time
-import socket
+import tkinter as tk # for gui
+import time # for timed waits
+import socket # for connecting with ip devices
+import ipaddress # for validating ip addresses
+import re # regex for validating text feilds
 
-# model object
+if dev_mode==0:
+    import RPi.GPIO as GPIO # for using sensor inputs
+
+# data object
 class Observable:
     def __init__(self, initialValue=None):
         self.data = initialValue
@@ -63,16 +68,21 @@ class Sensor(Observable):
     def __init__(self, sensor=1, initialValue="Off"):
         Observable.__init__(self,initialValue)
         self.sensor=sensor
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
-        GPIO.add_event_detect(self.sensor,GPIO.BOTH,self.sensorChange)
+        if dev_mode==0:
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
+            GPIO.add_event_detect(self.sensor,GPIO.BOTH,self.sensorChange)
 
     def sensorChange(self,value):
-        if GPIO.input(value):
-            self.set("On")
+        if dev_mode==0:
+            if GPIO.input(value):
+                self.set("On")
+            else:
+                self.set("Off")
         else:
             self.set("Off")
 
+# spyeworks instance of the observable class
 class Spyeworks(Observable):
     def __init__(self,ipaddy,filepath,active,idle,initialValue="Offline"):
         Observable.__init__(self,initialValue)
@@ -84,17 +94,20 @@ class Spyeworks(Observable):
         self.login()
 
     def login(self,cmd=""):
-        s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        s.connect((self.ipaddy,self.port))
-        s.send(b'LOGIN\r\n')
-        msg=s.recv(1024)
-        if(msg.decode('ascii')[:2]=='OK'):
-            self.set("Online")
-            if len(cmd)>0:
-                s.send(cmd.encode())
+        if dev_mode==0:
+            s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            s.connect((self.ipaddy,self.port))
+            s.send(b'LOGIN\r\n')
+            msg=s.recv(1024)
+            if(msg.decode('ascii')[:2]=='OK'):
+                self.set("Online")
+                if len(cmd)>0:
+                    s.send(cmd.encode())
+            else:
+                self.set("Offline")
+            s.close()
         else:
             self.set("Offline")
-        s.close()
 
     def playActive(self):
         login('SPL'+self.filepath+self.active+'.dml\r\n')
@@ -219,6 +232,10 @@ class View(tk.Toplevel):
         BTN_COL=4
         VALUE_WIDTH=50
         EDIT_WIDTH=8
+
+        ###################
+        ### Begin GUI Setup
+        ###################
         # spacer
         nRowNum=0
         self.titlespacerlabel = tk.Label(self, text='     ')
@@ -308,6 +325,10 @@ class View(tk.Toplevel):
         self.editIdleDelayTimeButton=tk.Button(self,text="EDIT", width=EDIT_WIDTH)
         self.editIdleDelayTimeButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
 
+        #################
+        ### End GUI Setup
+        #################
+
     #####################################################################
     ### Methods used by the controller for updating variables in the view
     #####################################################################
@@ -351,7 +372,6 @@ class BasicChangerWidget(tk.Toplevel):
         # initiate the popup as a toplevel object, keep track of the app and set the geometry and title
         tk.Toplevel.__init__(self, master)
         self.app=app
-        self.geometry('%dx%d+%d+%d' % (300,200,250,125))
         self.title(title)
         # display the current ip label and value
         self.currlabel=tk.Label(self, text=currlabel).pack(padx=5,pady=5)
@@ -365,78 +385,124 @@ class BasicChangerWidget(tk.Toplevel):
         # display the ok button
         self.okButton = tk.Button(self, text='OK', width=8)
         self.okButton.pack(padx=5,pady=5)
+        # add the error message label
+        self.errormsg = tk.Label(self)
+        self.errormsg.pack(padx=5,pady=5)
 
 # popup window for setting the players ip address
 class IPChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
         BasicChangerWidget.__init__(self, master, app, title, currlabel, newlabel)
+        self.geometry('%dx%d+%d+%d' % (300,200,350,250))
         self.okButton.config(command=self.validateIP)
 
     # validates the value entered to see if it is a valid ip address
     def validateIP(self):
-        # if IP is valid
-        self.app.newIP(self.value.get())
-        self.destroy()
+        try:
+            ip=ipaddress.ip_address(self.value.get())
+        except: # IP is invalid
+            # throw an error message
+            self.errormsg.config(text=self.value.get()+" is not a valid IP address.")
+        else: # IP is valid
+            self.app.newIP(self.value.get())
+            self.destroy()
+        
 
 # popup window for setting the filepath
 class FilepathChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
         BasicChangerWidget.__init__(self, master, app, title, currlabel, newlabel)
+        self.geometry('%dx%d+%d+%d' % (400,200,350,250))
         self.okButton.config(command=self.validateFilepath)
+        self.newentry.config(width=300)
 
     # validates the value entered to see if it is a valid filepath
     def validateFilepath(self):
-        # if filepath is valid
-        self.app.newFilepath(self.value.get())
-        self.destroy()
+        self.pattern = re.compile("^[a-z]:/[A-Za-z0-9/-_ ]*/$")
+        self.validate=self.pattern.match(self.value.get())
+        if self.validate: 
+            # filepath is valid
+            self.app.newFilepath(self.value.get())
+            self.destroy()
+        else: 
+            # throw an error message
+            self.errormsg.config(text=self.value.get()+" is not a valid filepath.")
 
 # popup window for setting the active list
 class ActiveChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
         BasicChangerWidget.__init__(self, master, app, title, currlabel, newlabel)
+        self.geometry('%dx%d+%d+%d' % (300,200,350,250))
         self.okButton.config(command=self.validateActive)
 
     # validates the value entered to see if it is a valid active list
     def validateActive(self):
-        # if list name is valid
-        self.app.newActive(self.value.get())
-        self.destroy()
+        self.pattern = re.compile("^[A-Za-z0-9-_ ]*$")
+        self.validate=self.pattern.match(self.value.get())
+        if self.validate: 
+            # list name is valid
+            self.app.newActive(self.value.get())
+            self.destroy()
+        else: 
+            # throw an error message
+            self.errormsg.config(text=self.value.get()+" is not a valid playlist name.")
 
 # popup window for setting the idle list
 class IdleChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
         BasicChangerWidget.__init__(self, master, app, title, currlabel, newlabel)
+        self.geometry('%dx%d+%d+%d' % (300,200,350,250))
         self.okButton.config(command=self.validateIdle)
 
     # validates the value entered to see if it is a valid idle list
     def validateIdle(self):
-        # if list name is valid
-        self.app.newIdle(self.value.get())
-        self.destroy()
+        self.pattern = re.compile("^[A-Za-z0-9-_ ]*$")
+        self.validate=self.pattern.match(self.value.get())
+        if self.validate: 
+            # list name is valid
+            self.app.newIdle(self.value.get())
+            self.destroy()
+        else: 
+            # throw an error message
+            self.errormsg.config(text=self.value.get()+" is not a valid playlist name.")
 
 # popup window for setting the active list delay time
 class ActiveDelayTimeChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
         BasicChangerWidget.__init__(self, master, app, title, currlabel, newlabel)
+        self.geometry('%dx%d+%d+%d' % (300,200,350,250))
         self.okButton.config(command=self.validateActiveDelayTime)
 
     # validates the value entered to see if it is a valid delay time
     def validateActiveDelayTime(self):
-        # if delay time is valid
-        self.app.newActiveDelayTime(self.value.get())
-        self.destroy()
+        self.pattern = re.compile("^[0-9]*$")
+        self.validate=self.pattern.match(self.value.get())
+        if self.validate: 
+            # delay time is valid
+            self.app.newActiveDelayTime(self.value.get())
+            self.destroy()
+        else: 
+            # throw an error message
+            self.errormsg.config(text=self.value.get()+" is not a valid delay time.")
 
 # popup window for setting the idle list delay time
 class IdleDelayTimeChangerWidget(BasicChangerWidget):
     def __init__(self, master, app, title, currlabel, newlabel):
         BasicChangerWidget.__init__(self, master, app, title, currlabel, newlabel)
+        self.geometry('%dx%d+%d+%d' % (300,200,350,250))
         self.okButton.config(command=self.validateIdleDelayTime)
 
     # validates the value entered to see if it is a valid delay time
     def validateIdleDelayTime(self):
-        # if delay time is valid
-        self.app.newIdleDelayTime(self.value.get())
-        self.destroy()
+        self.pattern = re.compile("^[0-9]*$")
+        self.validate=self.pattern.match(self.value.get())
+        if self.validate: 
+            # delay time is valid
+            self.app.newIdleDelayTime(self.value.get())
+            self.destroy()
+        else: 
+            # throw an error message
+            self.errormsg.config(text=self.value.get()+" is not a valid delay time.")
 
 
 # controller, talks to views and models

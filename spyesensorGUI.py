@@ -93,9 +93,15 @@ class Spyeworks(Observable):
         self.login()
 
     def login(self,cmd=""):
-        if dev_mode==0:
-            s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        # if dev_mode==0:
+        s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        s.settimeout(5)
+        try:
             s.connect((self.ipaddy,self.port))
+        except:
+            # connection error
+            self.set("Connection Error")
+        else:
             s.send(b'LOGIN\r\n')
             msg=s.recv(1024)
             if(msg.decode('ascii')[:2]=='OK'):
@@ -103,10 +109,10 @@ class Spyeworks(Observable):
                 if len(cmd)>0:
                     s.send(cmd.encode())
             else:
-                self.set("Offline")
+                self.set("Login Error")
             s.close()
-        else:
-            self.set("Offline")
+        # else:
+        #     self.set("Offline")
 
     def playActive(self):
         self.login('SPL'+self.filepath+self.active+'.dml\r\n')
@@ -333,7 +339,7 @@ class View(tk.Toplevel):
 
     # changes the ip address displayed to current 
     def updateOnline(self, value):
-        self.spyeworksonline.config(text="Player is "+value) 
+        self.spyeworksonline.config(text="Player Status: "+value) 
 
     # changes the ip address displayed to current 
     def updateIP(self, value):

@@ -116,14 +116,14 @@ class Spyeworks(Observable):
             s.close()
 
     def playActive(self):
-        #self.login('SPL'+self.filepath+self.active+'.dml\r\n')
+        self.login('SPL'+self.filepath+self.active+'.dml\r\n')
         print("Play Active")
         #self.currentlist=self.active
         self.activeplaying=True
         self.idleplaying=False
 
     def playIdle(self):
-        #self.login('SPL'+self.filepath+self.idle+'.dml\r\n')
+        self.login('SPL'+self.filepath+self.idle+'.dml\r\n')
         print("Play Idle")
         #self.currentlist=self.idle
         self.activeplaying=False
@@ -541,7 +541,7 @@ class Controller:
         self.SensorEnable.set(self.model.sensorenable.get())
         self.activeTimer=Timer(1, self.dummyFunc, ())
         self.idleTimer=Timer(1, self.dummyFunc, ())
-        #self.activelisttimer=False
+        self.playIdleList=False
 
         # create main view and link edit btns to funcs
         self.view = View(root)
@@ -670,24 +670,40 @@ class Controller:
         # sensor effects
         # if sensor is enabled
         if self.SensorEnable.get()=="T":
-            # if the sensor is active and the active list is enabled
-            if value=="On" and self.model.activelist.get()=="T":
-                # if the active and idle timers are off
-                if self.activeTimer.isAlive()==False and self.idleTimer.isAlive()==False:
-                    self.model.spyeworks.playActive()
-                    self.activeTimer=Timer(int(self.model.activedelaytime.get()), self.dummyFunc, ())
-                    self.activeTimer.start()
+            # if the sensor is activated
+            if value=="On":
                 # if the idle timer is active, cancel it
                 if self.idleTimer.isAlive()==True:
                     self.idleTimer.cancel()
+                # if the active timer is on and the active list is enabled, restart the active timer
+                if self.activeTimer.isAlive()==True and self.model.activelist.get()=="T":
+                    self.activeTimer.cancel()
+                    self.activeTimer=Timer(int(self.model.activedelaytime.get()), self.activeListTimer, ())
+                    self.activeTimer.start()
+                else:
+                    self.model.spyeworks.playActive()
+                    self.activeTimer=Timer(int(self.model.activedelaytime.get()), self.activeListTimer, ())
+                    self.activeTimer.start()
+                
             # if the sensor is inactive and the idle list is enabled
             elif value=="Off" and self.model.idlelist.get()=="T":
                 # if the idle timer is going (it shouldn't be, but just in case)
                 if self.idleTimer.isAlive()==True:
                     self.idleTimer.cancel()
-                elif self.activeTimer.isAlive()==False:
+                # if the active list timer is running and the active list is enabled
+                if self.activeTimer.isAlive()==True and self.model.activelist.get()=="T":
+                    self.playIdleList=True
+                # if the active timer is not running or the active list isn't enabled
+                else:
                     self.idleTimer=Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ())
                     self.idleTimer.start()
+
+    # plays idle list when active list is finished if called for
+    def activeListTimer(self):
+        if self.playIdleList==True and self.model.sensorstate.get()=="Off" and self.model.idlelist.get()=="T":
+            self.idleTimer=Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ())
+            self.idleTimer.start()
+        self.playIdleList=False
 
     # updates the active delay in the view
     def updateActiveList(self):

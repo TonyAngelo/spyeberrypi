@@ -17,7 +17,7 @@
 # 
 # 1) integrate with spyeworks
 #   X) login routines, ipaddress good/bad status on the view
-#   b) TEST change lists on sensor input 
+#   X) change lists on sensor input 
 #   c) show currently playing playlist
 #   d) playlist routines; allow user to select from available lists
 #       on the active, idle selection popups
@@ -25,16 +25,18 @@
 #########################################################################
 #########################################################################
 
-dev_mode=1
-
 # load imports
 import tkinter as tk # for gui
 from threading import Timer # for delay timers
 import socket # for connecting with ip devices
 import ipaddress # for validating ip addresses
 import re # regex for validating text feilds
-if dev_mode==0:
+try:
     import RPi.GPIO as GPIO # for using sensor inputs
+except:
+    dev_mode=1
+else:
+    dev_mode=0
 
 # data object
 class Observable:
@@ -90,10 +92,11 @@ class Spyeworks(Observable):
         self.filepath=filepath
         self.active=active
         self.idle=idle
+        self.activeplaying=False
+        self.idleplaying=False
         self.login()
 
     def login(self,cmd=""):
-        # if dev_mode==0:
         s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         s.settimeout(5)
         try:
@@ -111,14 +114,20 @@ class Spyeworks(Observable):
             else:
                 self.set("Login Error")
             s.close()
-        # else:
-        #     self.set("Offline")
 
     def playActive(self):
-        self.login('SPL'+self.filepath+self.active+'.dml\r\n')
+        #self.login('SPL'+self.filepath+self.active+'.dml\r\n')
+        print("Play Active")
+        #self.currentlist=self.active
+        self.activeplaying=True
+        self.idleplaying=False
 
     def playIdle(self):
-        self.login('SPL'+self.filepath+self.idle+'.dml\r\n')
+        #self.login('SPL'+self.filepath+self.idle+'.dml\r\n')
+        print("Play Idle")
+        #self.currentlist=self.idle
+        self.activeplaying=False
+        self.idleplaying=True
 
 # model
 class Model:
@@ -133,10 +142,10 @@ class Model:
             self.active = Observable("active")
             self.idle = Observable("idle")
             self.sensorenable = Observable("T")
-            self.activedelay = Observable("F")
-            self.activedelaytime = Observable("30")
-            self.idledelay = Observable("F")
-            self.idledelaytime = Observable("30")
+            self.activelist = Observable("T")
+            self.activedelaytime = Observable("0")
+            self.idlelist = Observable("T")
+            self.idledelaytime = Observable("0")
             self.UpdateTextFile()
         else:
             self.ipaddy = Observable(f.readline()[:-1])
@@ -144,9 +153,9 @@ class Model:
             self.active = Observable(f.readline()[:-1])
             self.idle = Observable(f.readline()[:-1])
             self.sensorenable = Observable(f.readline()[:-1])
-            self.activedelay = Observable(f.readline()[:-1])
+            self.activelist = Observable(f.readline()[:-1])
             self.activedelaytime = Observable(f.readline()[:-1])
-            self.idledelay = Observable(f.readline()[:-1])
+            self.idlelist = Observable(f.readline()[:-1])
             self.idledelaytime = Observable(f.readline()[:-1])
         # close the file
         f.close()
@@ -190,16 +199,16 @@ class Model:
         self.sensorenable.set(value)
         self.UpdateTextFile()
 
-    def SetActiveDelay(self, value):
-        self.activedelay.set(value)
+    def SetActiveList(self, value):
+        self.activelist.set(value)
         self.UpdateTextFile()
 
     def SetActiveDelayTime(self, value):
         self.activedelaytime.set(value)
         self.UpdateTextFile()
 
-    def SetIdleDelay(self, value):
-        self.idledelay.set(value)
+    def SetIdleList(self, value):
+        self.idlelist.set(value)
         self.UpdateTextFile()
 
     def SetIdleDelayTime(self, value):
@@ -214,7 +223,7 @@ class Model:
         # write the model to a text file for tracking variable changes
         f=open('spyeconfig.txt','w+')
         f.write(self.ipaddy.get()+'\n'+self.filepath.get()+'\n'+self.active.get()+'\n'+self.idle.get()+'\n'+self.sensorenable.get()+'\n'+
-            self.activedelay.get()+'\n'+self.activedelaytime.get()+'\n'+self.idledelay.get()+'\n'+self.idledelaytime.get()+'\n')
+            self.activelist.get()+'\n'+self.activedelaytime.get()+'\n'+self.idlelist.get()+'\n'+self.idledelaytime.get()+'\n')
         f.close()
 
 # main view
@@ -310,9 +319,9 @@ class View(tk.Toplevel):
         self.SensorStatus.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W)
         # active delay settings
         nRowNum=nRowNum+1
-        tk.Label(self,text="Active Delay Enable").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
-        self.ActiveDelayCheck=tk.Checkbutton(self,onvalue="T", offvalue="F")
-        self.ActiveDelayCheck.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
+        tk.Label(self,text="Active List Enabled:").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
+        self.ActiveListCheck=tk.Checkbutton(self,onvalue="T", offvalue="F")
+        self.ActiveListCheck.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
         tk.Label(self,text="Active Delay Time:").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
         self.ActiveDelayTime=tk.Label(self)
         self.ActiveDelayTime.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W,padx=5,pady=5)
@@ -320,9 +329,9 @@ class View(tk.Toplevel):
         self.editActiveDelayTimeButton.grid(column=BTN_COL,row=nRowNum,sticky=tk.E)
         # idle delay settings
         nRowNum=nRowNum+1
-        tk.Label(self,text="Idle Delay Enable").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
-        self.IdleDelayCheck=tk.Checkbutton(self,onvalue="T", offvalue="F")
-        self.IdleDelayCheck.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
+        tk.Label(self,text="Idle List Enabled:").grid(column=LABEL_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
+        self.IdleListCheck=tk.Checkbutton(self,onvalue="T", offvalue="F")
+        self.IdleListCheck.grid(column=VALUE_COL,row=nRowNum,sticky=tk.W)
         tk.Label(self,text="Idle Delay Time:").grid(column=LABEL2_COL,row=nRowNum,sticky=tk.E,padx=5,pady=5)
         self.IdleDelayTime=tk.Label(self)
         self.IdleDelayTime.grid(column=VALUE2_COL,row=nRowNum,sticky=tk.W,padx=5,pady=5)
@@ -524,13 +533,15 @@ class Controller:
         self.model.idledelaytime.addCallback(self.updateIdleDelayTime)
 
         # create variables for tracking checkboxs and timers
-        self.ActiveDelay=tk.StringVar()
-        self.ActiveDelay.set(self.model.activedelay.get())
-        self.IdleDelay=tk.StringVar()
-        self.IdleDelay.set(self.model.idledelay.get())
+        self.ActiveList=tk.StringVar()
+        self.ActiveList.set(self.model.activelist.get())
+        self.IdleList=tk.StringVar()
+        self.IdleList.set(self.model.idlelist.get())
         self.SensorEnable=tk.StringVar()
         self.SensorEnable.set(self.model.sensorenable.get())
-        self.sensorTimer=Timer(1, self.dummyFunc, ())
+        self.activeTimer=Timer(1, self.dummyFunc, ())
+        self.idleTimer=Timer(1, self.dummyFunc, ())
+        #self.activelisttimer=False
 
         # create main view and link edit btns to funcs
         self.view = View(root)
@@ -539,9 +550,9 @@ class Controller:
         self.view.editActiveButton.config(command=self.editActive)
         self.view.editIdleButton.config(command=self.editIdle)
         self.view.SensorEnable.config(variable=self.SensorEnable,command=self.updateSensorEnable)
-        self.view.ActiveDelayCheck.config(variable=self.ActiveDelay,command=self.updateActiveDelay)
+        self.view.ActiveListCheck.config(variable=self.ActiveList,command=self.updateActiveList)
         self.view.editActiveDelayTimeButton.config(command=self.editActiveDelayTime)
-        self.view.IdleDelayCheck.config(variable=self.IdleDelay,command=self.updateIdleDelay)
+        self.view.IdleListCheck.config(variable=self.IdleList,command=self.updateIdleList)
         self.view.editIdleDelayTimeButton.config(command=self.editIdleDelayTime)
 
         # update variables with data from model
@@ -657,36 +668,38 @@ class Controller:
         # updates the sensor status in the view
         self.view.updateSensor(value)
         # sensor effects
-        if self.sensorTimer.isAlive():
-            self.sensorTimer.cancel()
         # if sensor is enabled
         if self.SensorEnable.get()=="T":
-            # if the sensor is active
-            if value=="On":
-                if self.model.activedelay.get()=="T":
-                    self.sensorTimer=Timer(int(self.model.activedelaytime.get()), self.model.spyeworks.playActive, ())
-                    self.sensorTimer.start()
-                else:   
+            # if the sensor is active and the active list is enabled
+            if value=="On" and self.model.activelist.get()=="T":
+                # if the active and idle timers are off
+                if self.activeTimer.isAlive()==False and self.idleTimer.isAlive()==False:
                     self.model.spyeworks.playActive()
-            # if the sensor is inactive
-            elif value=="Off":
-                if self.model.idledelay.get()=="T":
-                    self.sensorTimer=Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ())
-                    self.sensorTimer.start()
-                else:
-                    self.model.spyeworks.playIdle()
+                    self.activeTimer=Timer(int(self.model.activedelaytime.get()), self.dummyFunc, ())
+                    self.activeTimer.start()
+                # if the idle timer is active, cancel it
+                if self.idleTimer.isAlive()==True:
+                    self.idleTimer.cancel()
+            # if the sensor is inactive and the idle list is enabled
+            elif value=="Off" and self.model.idlelist.get()=="T":
+                # if the idle timer is going (it shouldn't be, but just in case)
+                if self.idleTimer.isAlive()==True:
+                    self.idleTimer.cancel()
+                elif self.activeTimer.isAlive()==False:
+                    self.idleTimer=Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ())
+                    self.idleTimer.start()
 
     # updates the active delay in the view
-    def updateActiveDelay(self):
-        self.model.SetActiveDelay(self.ActiveDelay.get())
+    def updateActiveList(self):
+        self.model.SetActiveList(self.ActiveList.get())
 
     # updates the active delay time in the view
     def updateActiveDelayTime(self, value):
         self.view.updateActiveDelayTime(value)
 
     # updates the idle delay in the view
-    def updateIdleDelay(self):
-        self.model.SetIdleDelay(self.IdleDelay.get())
+    def updateIdleList(self):
+        self.model.SetIdleList(self.IdleList.get())
 
     # updates the idle delay time in the view
     def updateIdleDelayTime(self, value):

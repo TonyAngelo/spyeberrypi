@@ -1,9 +1,9 @@
 10.10.9.51
 c:/users/public/documents/spyeworks/content/
-active
-idle
+code 42
+jamf
 T
-F
-30
-F
-30
+T
+0
+T
+0

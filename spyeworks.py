@@ -94,9 +94,9 @@ class Spyeworks(Observable):
                                 # get the playlist response
                                 myString=st[len(self.filepath):-4]
                                 # if there is a response
-                                if len(myString)>0:
+                                #if len(myString)>0:
                                     # assign response to current list
-                                    self.currentList.set(myString)
+                                self.currentList.set(myString)
             # login not okay         
             else:
                 # set the device to login error

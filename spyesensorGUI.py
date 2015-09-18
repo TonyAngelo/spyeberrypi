@@ -30,7 +30,7 @@ import tkinter as tk # for gui
 from threading import Timer # for delay timers
 import socket # for connecting with ip devices
 import ipaddress # for validating ip addresses
-import re # regex for validating text feilds
+import re # regex for validating text fields
 try:
     import RPi.GPIO as GPIO # for using sensor inputs
 except:

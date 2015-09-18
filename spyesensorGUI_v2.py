@@ -73,6 +73,7 @@ class Sensor(Observable):
         self.sensor=sensor
         if dev_mode==0:
             GPIO.setmode(GPIO.BCM)
+            GPIO.setwarnings(False)
             GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
             GPIO.add_event_detect(self.sensor,GPIO.BOTH,self.sensorChange)
 
@@ -129,6 +130,16 @@ class Spyeworks(Observable):
                     s.send(cmd.encode())
                     # if the command needs to be parsed
                     if self.parse:
+                        if self.parseType=='active':
+                            # set the active string and change the flags
+                            self.currentList.set(self.active)
+                            self.activeplaying=True
+                            self.idleplaying=False
+                        elif self.parseType=='idle':
+                            # set the idle string and change the flags
+                            self.currentList.set(self.idle)
+                            self.activeplaying=False
+                            self.idleplaying=True
                         # reset the parse flag
                         self.parse=False
                         # get the strings for parsing
@@ -153,16 +164,6 @@ class Spyeworks(Observable):
                                 if len(myString)>0:
                                     # assign response to current list
                                     self.currentList.set(myString)
-                        elif self.parseType=='active':
-                            # set the active string and change the flags
-                            self.currentlist=self.active
-                            self.activeplaying=True
-                            self.idleplaying=False
-                        elif self.parseType=='idle':
-                            # set the idle string and change the flags
-                            self.currentlist=self.idle
-                            self.activeplaying=False
-                            self.idleplaying=True
             # login not okay         
             else:
                 # set the device to login error
@@ -257,7 +258,7 @@ class Model:
         f.close()
 
         # get the current status of the sensor variable
-        self.sensorstate = Sensor(4)
+        self.sensorstate = Sensor(14)
 
         # initiate the spyeworks player
         self.spyeworks = Spyeworks(self.ipaddy.get(),self.filepath.get(),

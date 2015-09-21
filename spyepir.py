@@ -7,6 +7,8 @@
 # import libraries
 import RPi.GPIO as GPIO # for the sensor
 from threading import Timer # for delay timers
+import time # for measuring spyeworks buffer timeout
+import chardet # for character encoding/decoding
 import socket # for ip comms
 
 # data object

@@ -366,13 +366,7 @@ class Controller:
             self.idleTimer.start()
         self.playIdleList=False
 
+app = Controller()
 
-
-if __name__ == '__main__':
-    
-    try:
-        app = Controller()
-
-    # Stop on Ctrl+C and clean up
-    except KeyboardInterrupt:
-        GPIO.cleanup()
+while True:
+    pass

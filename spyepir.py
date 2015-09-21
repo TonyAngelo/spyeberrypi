@@ -40,12 +40,11 @@ class Sensor(Observable):
     def __init__(self, sensor=1, initialValue="Off"):
         Observable.__init__(self,initialValue)
         self.sensor=sensor
-        if dev_mode==0:
-            GPIO.cleanup()
-            GPIO.setmode(GPIO.BCM)
-            GPIO.setwarnings(False)
-            GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
-            GPIO.add_event_detect(self.sensor,GPIO.BOTH,self.sensorChange)
+        GPIO.cleanup()
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
+        GPIO.add_event_detect(self.sensor,GPIO.BOTH,self.sensorChange)
 
     def sensorChange(self,value):
         if GPIO.input(value):

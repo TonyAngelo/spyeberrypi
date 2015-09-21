@@ -4,11 +4,10 @@
 ###
 ###############################################################
 
-
 # import libraries
-import RPi.GPIO as GPIO
-import time
-import socket
+import RPi.GPIO as GPIO # for the sensor
+import time # for time delays
+import socket # for ip comms
 
 # sensor number used
 sensor=14
@@ -30,6 +29,7 @@ def fnPlayList(player,path,name):
         s.send(cmd.encode())
     s.close()
 
+# function for writing variables to text file
 def UpdateTextFile():
     # write the model to a text file for tracking variable changes
     f=open('spyeconfig.txt','w+')
@@ -42,38 +42,51 @@ try:
     f=open('spyeconfig.txt','r')
 # problem opening the file, load the default values
 except:
-    player_IP = Observable("192.168.1.110")
-    listpath = Observable("c:/users/public/documents/spyeworks/content/")
-    active_list = Observable("active")
-    idle_list = Observable("idle")
-    active_delay_state = Observable("F")
-    active_delay_time = Observable("0")
-    idle_delay_state = Observable("T")
-    idle_delay_time = Observable("10")
+    player_IP = "192.168.1.110"
+    listpath = "c:/users/public/documents/spyeworks/content/"
+    active_list = "active"
+    idle_list = "idle"
+    active_delay_state = "F"
+    active_delay_time = "0"
+    idle_delay_state = "T"
+    idle_delay_time = "10"
     UpdateTextFile()
 else:
-    player_IP = Observable(f.readline()[:-1])
-    listpath = Observable(f.readline()[:-1])
-    active_list = Observable(f.readline()[:-1])
-    idle_list = Observable(f.readline()[:-1])
-    active_delay_state = Observable(f.readline()[:-1])
-    active_delay_time = Observable(f.readline()[:-1])
-    idle_delay_state = Observable(f.readline()[:-1])
-    idle_delay_time = Observable(f.readline()[:-1])
+# load the values from the file
+    player_IP = f.readline()[:-1]
+    listpath = f.readline()[:-1]
+    active_list = f.readline()[:-1]
+    idle_list = f.readline()[:-1]
+    active_delay_state = f.readline()[:-1]
+    active_delay_time = f.readline()[:-1]
+    idle_delay_state = f.readline()[:-1]
+    idle_delay_time = f.readline()[:-1]
 # close the file
 f.close()
 
 # start sensor loop
 while True:
+    # wait a beat
     time.sleep(0.1)
+    # update the previous sensor state variable
     prev_state=curr_state
+    # get the current state
     curr_state=GPIO.input(sensor)
+    # if the current state is different from the previous
     if curr_state!=prev_state:
+        # if the sensor was activated
         if curr_state:
+            # if the active delay timer is enabled
             if active_delay_state=="T":
+                # wait for the delay length
                 time.sleep(int(active_delay_time))
-                fnPlayList(player_IP,listpath,active_list) # active list
+            # play the list
+            fnPlayList(player_IP,listpath,active_list)
+        # if the sensor went to idle
         else:
+            # if the idle delay is enabled
             if idle_delay_state=="T":
+                # wait for the delay length
                 time.sleep(int(idle_delay_time))
-                fnPlayList(player_IP,listpath,idle_list) # idle list
+            # play list
+            fnPlayList(player_IP,listpath,idle_list)

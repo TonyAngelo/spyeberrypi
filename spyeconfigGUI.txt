@@ -2,7 +2,8 @@
 c:/users/public/documents/spyeworks/content/
 code 42
 jamf
-F
+T
+T
 0
 T
-10
+0

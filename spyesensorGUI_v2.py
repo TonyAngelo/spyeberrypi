@@ -231,7 +231,7 @@ class Model:
     def __init__(self):
         #check to see if values are in text file, otherwise load defaults
         try:
-            f=open('spyeconfig.txt','r')
+            f=open('spyeconfigGUI.txt','r')
         # problem opening the file, load the default values
         except:
             self.ipaddy = Observable("192.168.1.110")
@@ -318,7 +318,7 @@ class Model:
 
     def UpdateTextFile(self):
         # write the model to a text file for tracking variable changes
-        f=open('spyeconfig.txt','w+')
+        f=open('spyeconfigGUI.txt','w+')
         f.write(self.ipaddy.get()+'\n'+self.filepath.get()+'\n'+self.active.get()+'\n'+self.idle.get()+'\n'+self.sensorenable.get()+'\n'+
             self.activelist.get()+'\n'+self.activedelaytime.get()+'\n'+self.idlelist.get()+'\n'+self.idledelaytime.get()+'\n')
         f.close()

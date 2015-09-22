@@ -42,7 +42,6 @@ class Sensor(Observable):
     def __init__(self, sensor=1, initialValue="Off"):
         Observable.__init__(self,initialValue)
         self.sensor=sensor
-        GPIO.cleanup()
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
@@ -338,28 +337,18 @@ class Controller:
             # if the idle timer is active, cancel it
             if self.idleTimer.isAlive()==True:
                 self.idleTimer.cancel()
-            # if the active timer is on and the active list is enabled, restart the active timer
-            if self.activeTimer.isAlive()==True and self.model.activelist.get()=="T":
-                self.activeTimer.cancel()
-                self.activeTimer=Timer(int(self.model.activedelaytime.get()), self.activeListTimer, ())
-                self.activeTimer.start()
-            else:
+            # if the idle list is playing, play the active list
+            if self.model.spyeworks.currentList==self.model.idle:
                 self.model.spyeworks.playActive()
-                self.activeTimer=Timer(int(self.model.activedelaytime.get()), self.activeListTimer, ())
-                self.activeTimer.start()
             
         # if the sensor is inactive and the idle list is enabled
         elif value=="Off" and self.model.idlelist.get()=="T":
             # if the idle timer is going (it shouldn't be, but just in case)
             if self.idleTimer.isAlive()==True:
                 self.idleTimer.cancel()
-            # if the active list timer is running and the active list is enabled
-            if self.activeTimer.isAlive()==True and self.model.activelist.get()=="T":
-                self.playIdleList=True
-            # if the active timer is not running or the active list isn't enabled
-            else:
-                self.idleTimer=Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ())
-                self.idleTimer.start()
+            # start the idle list timer
+            self.idleTimer=Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ())
+            self.idleTimer.start()
 
     # plays idle list when active list is finished if called for
     def activeListTimer(self):

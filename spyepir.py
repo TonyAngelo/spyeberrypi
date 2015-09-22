@@ -317,11 +317,13 @@ class Controller:
 
     # updates the player online status in the view
     def updatePlayerOnline(self, value):
-        print("Player is "+value)
+        #print("Player is "+value)
+        pass
 
     # updates the current list status in the view
     def updateCurrentList(self, value):
-        print("Current List is "+value)
+        #print("Current List is "+value)
+        pass
 
     # dummy function for passing to timer thread
     def dummyFunc(self):
@@ -330,7 +332,7 @@ class Controller:
     # handles updates to the sensor status
     def updateSensorState(self, value):
         # updates the sensor status in the view
-        print("Sensor is "+value)
+        #print("Sensor is "+value)
         # if the sensor is activated
         if value=="On":
             # if the idle timer is active, cancel it

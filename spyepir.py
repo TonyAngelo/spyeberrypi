@@ -338,7 +338,7 @@ class Controller:
             if self.idleTimer.isAlive()==True:
                 self.idleTimer.cancel()
             # if the idle list is playing, play the active list
-            if self.model.spyeworks.currentList==self.model.idle:
+            if self.model.spyeworks.currentList.get()==self.model.idle.get():
                 self.model.spyeworks.playActive()
             
         # if the sensor is inactive and the idle list is enabled

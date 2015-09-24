@@ -1,10 +1,10 @@
-# spyeberrypi
-Python scripts for RaspberryPI-Spyeworks integration
+# SpyeberryPI
+
+*Python scripts for RaspberryPI-Spyeworks integration*
 
 The following scripts are for motion sensor control of the spyeworks player
 
-spyepir.py
-
-This script can be run on the console side of the RaspberryPI.
-
-
+- spyepir.py - can be run on the console side of the RaspberryPI
+- spyepirGUI.py - can be run on the GUI side of the RaspberryPI and allows for configuration
+- spyepirtest.py - proof of concept for spyeworks control via motion sensor
+- spyeconfig.txt - text file that contains the current settings for the motion scripts

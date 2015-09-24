@@ -1,3 +1,9 @@
+###############################################################
+###
+###   Spyeworks python class
+###
+###############################################################
+
 import socket # for connecting with ip devices
 import chardet
 import time

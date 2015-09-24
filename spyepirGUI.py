@@ -1,7 +1,7 @@
 #########################################################################
 #########################################################################
 #
-# Spyeworks - Motion Sensor Interface - v0.9
+# Spyeworks - Motion Sensor GUI - v1
 #
 # This program uses the Rasberry Pi to track a connected motion sensor 
 # and based on it's state change the playlist on a Spyeworks Digital 
@@ -14,13 +14,9 @@
 #########################################################################
 #
 # To do:
-# 
-# 1) integrate with spyeworks
-#   X) login routines, ipaddress good/bad status on the view
-#   X) change lists on sensor input 
-#   c) show currently playing playlist
-#   d) playlist routines; allow user to select from available lists
-#       on the active, idle selection popups
+#
+# Playlist routines; allow user to select from available lists
+#    on the active, idle selection popups
 #
 #########################################################################
 #########################################################################
@@ -231,7 +227,7 @@ class Model:
     def __init__(self):
         #check to see if values are in text file, otherwise load defaults
         try:
-            f=open('spyeconfigGUI.txt','r')
+            f=open('spyeconfig.txt','r')
         # problem opening the file, load the default values
         except:
             self.ipaddy = Observable("192.168.1.110")
@@ -318,7 +314,7 @@ class Model:
 
     def UpdateTextFile(self):
         # write the model to a text file for tracking variable changes
-        f=open('spyeconfigGUI.txt','w+')
+        f=open('spyeconfig.txt','w+')
         f.write(self.ipaddy.get()+'\n'+self.filepath.get()+'\n'+self.active.get()+'\n'+self.idle.get()+'\n'+self.sensorenable.get()+'\n'+
             self.activelist.get()+'\n'+self.activedelaytime.get()+'\n'+self.idlelist.get()+'\n'+self.idledelaytime.get()+'\n')
         f.close()

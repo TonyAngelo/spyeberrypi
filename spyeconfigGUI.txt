@@ -1,9 +1,0 @@
-10.10.9.51
-c:/users/public/documents/spyeworks/content/
-code 42
-jamf
-T
-T
-0
-T
-0

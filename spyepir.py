@@ -1,8 +1,17 @@
-###############################################################
-###
-###   Raspberry pi motion control of Spyeworks, console version
-###
-###############################################################
+#########################################################################
+#########################################################################
+#
+# Spyeworks - Motion Sensor Interface - v1
+#
+# This program uses the Rasberry Pi to track a connected motion sensor 
+# and based on it's state change the playlist on a Spyeworks Digital 
+# Signage Player from an Active list to an Idle list.
+#
+# by Tony Petrangelo
+# tonypetrangelo@gmail.com
+#
+#########################################################################
+#########################################################################
 
 # import libraries
 import RPi.GPIO as GPIO # for the sensor

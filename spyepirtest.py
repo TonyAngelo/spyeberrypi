@@ -2,6 +2,8 @@
 ###
 ###   Raspberry pi motion control of Spyeworks, console version
 ###
+###   this is a proof of concept, not a fully featured program
+###
 ###############################################################
 
 

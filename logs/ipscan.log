@@ -1,0 +1,4 @@
+2016-04-04 16:42:40 INFO  Start arping 10.10.8.0/22 on eth0
+2016-04-04 16:42:46 INFO  Found 0 responsive IPs and 1024 non-responsive IPs.
+2016-04-04 16:44:56 INFO  Start arping 10.10.8.0/22 on eth0
+2016-04-04 16:45:04 INFO  Found 0 responsive IPs and 1024 non-responsive IPs.

@@ -1,0 +1,57 @@
+2016-04-04 16:58:55 WARNING Failed to execute tcpdump. Check it is installed and in the PATH
+2016-04-04 16:58:55 INFO  Parsing spyeconfig.txt...
+2016-04-04 16:58:55 INFO  Start arping 10.10.8.0/22 on eth0
+2016-04-04 16:59:05 INFO  Found 37 responsive IPs and 987 non-responsive IPs.
+2016-04-04 16:59:05 INFO  Bingo! Target device 00:90:0b:1e:b9:52 found at 10.10.9.58
+2016-04-04 16:59:05 INFO  IP 10.10.9.58 is valid.
+2016-04-04 16:59:05 INFO  Parsing complete.
+2016-04-04 17:08:14 WARNING Failed to execute tcpdump. Check it is installed and in the PATH
+2016-04-04 17:08:14 INFO  Parsing spyeconfig.txt...
+2016-04-04 17:08:14 INFO  Start arping 10.10.8.0/22 on eth0
+2016-04-04 17:08:26 INFO  Found 31 responsive IPs and 993 non-responsive IPs.
+2016-04-04 17:08:26 INFO  Bingo! Target device 00:90:0b:1e:b9:52 found at 10.10.9.58
+2016-04-04 17:08:26 INFO  IP 10.10.9.58 is valid.
+2016-04-04 17:08:26 INFO  Parsing complete.
+2016-04-04 17:08:26 INFO  Sensor init
+2016-04-04 17:10:04 WARNING Failed to execute tcpdump. Check it is installed and in the PATH
+2016-04-04 17:10:04 INFO  Parsing spyeconfig.txt...
+2016-04-04 17:10:04 INFO  Start arping 10.10.8.0/22 on eth0
+2016-04-04 17:10:16 INFO  Found 16 responsive IPs and 1008 non-responsive IPs.
+2016-04-04 17:10:16 INFO  Parsing complete.
+2016-04-04 17:10:16 INFO  Sensor init
+2016-04-04 17:10:17 ERROR No IP address found for MAC 00:90:0B:1E:B9:52
+2016-04-04 17:11:39 WARNING Failed to execute tcpdump. Check it is installed and in the PATH
+2016-04-04 17:11:39 INFO  Parsing spyeconfig.txt...
+2016-04-04 17:11:39 INFO  Start arping 10.10.8.0/22 on eth0
+2016-04-04 17:11:51 INFO  Found 22 responsive IPs and 1002 non-responsive IPs.
+2016-04-04 17:11:51 INFO  Parsing complete.
+2016-04-04 17:11:51 INFO  Sensor init
+2016-04-04 17:11:51 ERROR No IP address found for MAC 00:90:0B:1E:B9:52
+2016-04-04 17:11:51 INFO  Connecting to player at 
+2016-04-04 17:11:51 ERROR Connection error: 
+2016-04-04 17:12:01 INFO  Connecting to player at 
+2016-04-04 17:12:01 ERROR Connection error: 
+2016-04-04 17:13:02 WARNING Failed to execute tcpdump. Check it is installed and in the PATH
+2016-04-04 17:13:02 INFO  Parsing spyeconfig.txt...
+2016-04-04 17:13:02 INFO  Start arping 10.10.8.0/22 on eth0
+2016-04-04 17:13:15 INFO  Found 22 responsive IPs and 1002 non-responsive IPs.
+2016-04-04 17:13:15 INFO  Parsing complete.
+2016-04-04 17:13:15 INFO  Sensor init
+2016-04-04 17:13:15 ERROR No IP address found for MAC 00:90:0B:1E:B9:52
+2016-04-04 17:13:15 INFO  Connecting to player at 
+2016-04-04 17:13:15 ERROR Connection error: 
+2016-04-04 17:13:25 INFO  Connecting to player at 
+2016-04-04 17:13:25 ERROR Connection error: 
+2016-04-04 17:15:33 INFO  Parsing spyeconfig.txt...
+2016-04-04 17:15:33 INFO  Start arping 10.10.8.0/22 on eth0
+2016-04-04 17:15:46 INFO  Found 62 responsive IPs and 962 non-responsive IPs.
+2016-04-04 17:15:46 INFO  Bingo! Target device 00:90:0b:1e:b9:52 found at 10.10.9.58
+2016-04-04 17:15:46 INFO  IP 10.10.9.58 is valid.
+2016-04-04 17:15:46 INFO  Parsing complete.
+2016-04-04 17:15:46 INFO  Sensor init
+2016-04-04 17:15:46 INFO  Connecting to player at 10.10.9.58
+2016-04-04 17:15:46 INFO  Connected to player at 10.10.9.58. Logging in...
+2016-04-04 17:15:46 INFO  Connected and logged in to player at 10.10.9.58
+2016-04-04 17:15:57 INFO  Connecting to player at 10.10.9.58
+2016-04-04 17:15:57 INFO  Connected to player at 10.10.9.58. Logging in...
+2016-04-04 17:15:57 INFO  Connected and logged in to player at 10.10.9.58

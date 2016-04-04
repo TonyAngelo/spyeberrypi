@@ -1,4 +1,4 @@
-10.10.9.51
+00:90:0B:1E:B9:52
 c:/users/public/documents/spyeworks/content/
 code 42
 jamf

@@ -61,10 +61,12 @@ class Sensor(Observable):
     def sensorChange(self,value):
         if GPIO.input(value):
             #logger.info("Sensor on")
+            print("Sensor on")
             self.set("On")
             self.led.ledState(1)
         else:
             #logger.info("Sensor off")
+            print("Sensor off")
             self.set("Off")
             self.led.ledState(0)
 

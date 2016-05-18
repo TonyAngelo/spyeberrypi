@@ -30,7 +30,7 @@ class Observable:
     def unset(self):
         self.data = None
 
-class LED(Observable):
+class LedEmitter(Observable):
     def __init__(self, port=1, initialValue="Off"):
         Observable.__init__(self, initialValue)
         self.port = port
@@ -56,7 +56,7 @@ class Sensor(Observable):
         GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
         GPIO.add_event_detect(self.sensor,GPIO.BOTH,self.sensorChange)
 
-        self.led = LED(24)
+        self.led = LedEmitter(24)
 
     def sensorChange(self,value):
         if GPIO.input(value):

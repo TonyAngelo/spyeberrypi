@@ -1,8 +1,8 @@
 import RPi.GPIO as GPIO # for the sensor
-import logging
+#import logging
 
-logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/sensor.log', level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+#logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/sensor.log', level=logging.DEBUG)
+#logger = logging.getLogger(__name__)
 
 # data object
 class Observable:
@@ -34,7 +34,7 @@ class LED(Observable):
     def __init__(self, port=1, initialValue="Off"):
         Observable.__init__(self, initialValue)
         self.port = port
-        logger.info("LED init")
+        #logger.info("LED init")
         GPIO.setup(self.port, GPIO.OUT)
         GPIO.output(self.port, GPIO.LOW)
 
@@ -50,7 +50,7 @@ class Sensor(Observable):
     def __init__(self, sensor=1, initialValue="Off"):
         Observable.__init__(self,initialValue)
         self.sensor=sensor
-        logger.info("Sensor init")
+        #logger.info("Sensor init")
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
@@ -60,11 +60,11 @@ class Sensor(Observable):
 
     def sensorChange(self,value):
         if GPIO.input(value):
-            logger.info("Sensor on")
+            #logger.info("Sensor on")
             self.set("On")
             self.led(1)
         else:
-            logger.info("Sensor off")
+            #logger.info("Sensor off")
             self.set("Off")
             self.led(0)
 

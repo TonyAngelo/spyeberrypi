@@ -13,11 +13,11 @@
 #########################################################################
 
 # import libraries
-#from models.models import Model
 #from threading import Timer  # for delay timers
 
 import sys
 import logging
+from models.models import Observable
 
 logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/models.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)

@@ -16,6 +16,7 @@
 #from models.models import Model
 #from threading import Timer  # for delay timers
 
+import sys
 import logging
 
 logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/models.log', level=logging.DEBUG)
@@ -79,7 +80,7 @@ class Controller:
         elif self.main_selection == '4':
             self.printSecondMenu('Idle List', self.idle)
         elif self.main_selection == '5':
-            break
+            sys.exit()
         else:
             print("Invalid selection.\n")
             self.printMenu()

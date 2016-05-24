@@ -81,6 +81,9 @@ class Controller:
         # close the file
         f.close()
 
+        # create the title/value dictionary
+        self.settingsDict = {'Spyeworks IP':self.ipaddy, 'Active List':self.active, 'Active Delay':self.activedelay, 'Idle List':self.idle}
+
         # print the menu
         self.printMenu()
 
@@ -125,8 +128,12 @@ class Controller:
         if self.second_selection == '1':
             # new input
             self.new_value = input("Enter a new value: ")
+            print("\n")
             # validate new value
-            print("New Value entered:", self.new_value)
+            self.settingsDict[title].set(self.new_value)
+            self.UpdateTextFile()
+            # print new value
+            print("New Value entered:", self.settingsDict[title].get())
             print("\n")
             # print menu again
             self.printSecondMenu(title, self.new_value)
@@ -147,8 +154,7 @@ class Controller:
         # write the model to a text file for tracking variable changes
         f = open('spyeconfig.txt', 'w+')
         f.write(
-            self.mac.get() + '\n' + self.filepath.get() + '\n' + self.active.get() + '\n' + self.idle.get() + '\n' + self.sensorenable.get() + '\n' +
-            self.activelist.get() + '\n' + self.activedelaytime.get() + '\n' + self.idlelist.get() + '\n' + self.idledelaytime.get() + '\n')
+            self.filepath.get() + '\n' + self.ipaddy.get() + '\n' + self.active.get() + '\n' + self.activedelaytime.get() + '\n' + self.idle.get() + '\n')
         f.close()
         logger.info("Writing complete.")
 

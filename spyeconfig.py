@@ -86,24 +86,27 @@ class Controller:
 
     def printMenu(self):
         print("""
-                1. Change Spyeworks IP
-                2. Change Active List
-                3. Change Active Delay
-                4. Change Idle List
-                5. Quit/Exit
-                """)
+        Spyeworks Motion Sensor Configuration Main Menu
+
+            1. Change Spyeworks IP
+            2. Change Active List
+            3. Change Active Delay
+            4. Change Idle List
+            5. Quit/Exit
+            """)
 
         # get the selection
-        self.main_selection = input("Please select:")
+        self.main_selection = input("Please select: ")
+        print("\n")
 
         if self.main_selection == '1':
-            self.printSecondMenu('Spyeworks IP', self.ipaddy)
+            self.printSecondMenu('Spyeworks IP', self.ipaddy.get())
         elif self.main_selection == '2':
-            self.printSecondMenu('Active List', self.active)
+            self.printSecondMenu('Active List', self.active.get())
         elif self.main_selection == '3':
-            self.printSecondMenu('Active Delay', self.activedelay)
+            self.printSecondMenu('Active Delay', self.activedelay.get())
         elif self.main_selection == '4':
-            self.printSecondMenu('Idle List', self.idle)
+            self.printSecondMenu('Idle List', self.idle.get())
         elif self.main_selection == '5':
             sys.exit()
         else:
@@ -116,13 +119,15 @@ class Controller:
         print("2. Back to Main")
 
         # get the selection
-        self.second_selection = input("Please select:")
+        self.second_selection = input("Please select: ")
+        print("\n")
 
         if self.second_selection == '1':
             # new input
-            self.new_value = input("Enter a new value:")
+            self.new_value = input("Enter a new value: ")
             # validate new value
             print("New Value entered:", self.new_value)
+            print("\n")
             # print menu again
             self.printSecondMenu(title, self.new_value)
         elif self.second_selection == '2':

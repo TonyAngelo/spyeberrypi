@@ -154,7 +154,7 @@ class Controller:
         # write the model to a text file for tracking variable changes
         f = open('spyeconfig.txt', 'w+')
         f.write(
-            self.filepath.get() + '\n' + self.ipaddy.get() + '\n' + self.active.get() + '\n' + self.activedelaytime.get() + '\n' + self.idle.get() + '\n')
+            self.filepath.get() + '\n' + self.ipaddy.get() + '\n' + self.active.get() + '\n' + self.activedelay.get() + '\n' + self.idle.get() + '\n')
         f.close()
         logger.info("Writing complete.")
 

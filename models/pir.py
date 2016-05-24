@@ -37,8 +37,8 @@ class Sensor(Observable):
         if GPIO.input(value):
             logger.info("Sensor on")
             self.set("On")
-            self.ledState(1)
+            self.led.ledState(1)
         else:
             logger.info("Sensor off")
             self.set("Off")
-            self.ledState(0)
+            self.led.ledState(0)

@@ -68,7 +68,7 @@ class Model:
         f.close()
 
         # get the current status of the sensor variable
-        self.sensorstate = Sensor(14)
+        self.sensorstate = Sensor(23)
 
         # initiate the spyeworks player
         #if len(self.ipaddy.get())==0:

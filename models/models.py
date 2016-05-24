@@ -29,8 +29,8 @@ class Observable:
     def unset(self):
         self.data = None
 
-from pir import Sensor
-from spye import Spyeworks
+from models.pir import Sensor
+from models.spye import Spyeworks
 #from ipscan import find_mac_on_network
 
 # model

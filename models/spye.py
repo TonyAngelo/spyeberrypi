@@ -1,4 +1,4 @@
-from models import Observable
+from models.models import Observable
 import time # for measuring spyeworks buffer timeout
 import socket # for ip comms
 import chardet # for character encoding/decoding

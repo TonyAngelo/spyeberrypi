@@ -1,4 +1,4 @@
-from models import Observable
+from models.models import Observable
 import RPi.GPIO as GPIO # for the sensor
 import logging
 

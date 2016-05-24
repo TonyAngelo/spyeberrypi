@@ -28,8 +28,7 @@ class Controller:
 
         # create variables for timers
         self.activeTimer=Timer(1, self.dummyFunc, ())
-        self.idleTimer=Timer(1, self.dummyFunc, ())
-        self.playIdleList=False
+        #self.playIdleList=False
 
         # update variables with data from model
         self.updatePlayerOnline(self.model.spyeworks.get())
@@ -59,28 +58,13 @@ class Controller:
         print("Sensor is "+value)
         # if the sensor is activated
         if value=="On":
-            # if the idle timer is active, cancel it
-            if self.idleTimer.isAlive()==True:
-                self.idleTimer.cancel()
-            # if the idle list is playing, play the active list
-            if self.model.spyeworks.currentList.get()==self.model.idle.get():
+            # if the active timer is not active
+            if self.activeTimer.isAlive()==False:
+                # play the active list
                 self.model.spyeworks.playActive()
-            
-        # if the sensor is inactive and the idle list is enabled
-        elif value=="Off" and self.model.idlelist.get()=="T":
-            # if the idle timer is going (it shouldn't be, but just in case)
-            if self.idleTimer.isAlive()==True:
-                self.idleTimer.cancel()
-            # start the idle list timer
-            self.idleTimer=Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ())
-            self.idleTimer.start()
-
-    # plays idle list when active list is finished if called for
-    def activeListTimer(self):
-        if self.playIdleList==True and self.model.sensorstate.get()=="Off" and self.model.idlelist.get()=="T":
-            self.idleTimer=Timer(int(self.model.idledelaytime.get()), self.model.spyeworks.playIdle, ())
-            self.idleTimer.start()
-        self.playIdleList=False
+                # start the active list timer
+                self.activeTimer = Timer(int(self.model.activedelaytime.get()), self.model.spyeworks.playIdle, ())
+                self.activeTimer.start()
 
 app = Controller()
 

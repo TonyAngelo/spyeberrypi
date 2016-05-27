@@ -111,9 +111,11 @@ class Model:
     ###############################################################
 
     def displayPowerOn(self):
+        print('Turn On Timer')
         self.tv.power(1)
 
     def displayPowerOff(self):
+        print('Turn Off Timer')
         self.tv.power(0)
 
     ###############################################################

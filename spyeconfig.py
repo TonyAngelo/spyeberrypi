@@ -45,10 +45,10 @@ class Controller:
             self.activedelay = Observable("0")
             self.idle = Observable("idle")
             self.onoffDays = Observable("Daily")
-            self.onHour = Observable("7")
-            self.onMin = Observable("0")
-            self.offHour = Observable("19")
-            self.offMin = Observable("0")
+            self.onHour = Observable(7)
+            self.onMin = Observable(0)
+            self.offHour = Observable(19)
+            self.offMin = Observable(0)
             self.UpdateTextFile()
 
             logger.warn("spyeconfig.txt created with default values.")
@@ -63,10 +63,10 @@ class Controller:
             self.activedelay = Observable(f.readline()[:-1])
             self.idle = Observable(f.readline()[:-1])
             self.daysLabel = Observable(f.readline()[:-1])
-            self.onHour = Observable(f.readline()[:-1])
-            self.onMin = Observable(f.readline()[:-1])
-            self.offHour = Observable(f.readline()[:-1])
-            self.offMin = Observable(f.readline()[:-1])
+            self.onHour = Observable(int(f.readline()[:-1]))
+            self.onMin = Observable(int(f.readline()[:-1]))
+            self.offHour = Observable(int(f.readline()[:-1]))
+            self.offMin = Observable(int(f.readline()[:-1]))
             logger.info("Parsing complete.")
         # close the file
         f.close()
@@ -167,7 +167,7 @@ class Controller:
                 print('Invalid Turn Off Hour')
             self.printMenu()
 
-        elif self.main_selection == '7':
+        elif self.main_selection == '8':
             print('Turn On ', self.daysLabel.get(), ' at ', str(self.onHour.get()), ':', str(self.onMin.get()).zfill(2), sep='')
             print('Turn Off ', self.daysLabel.get(), ' at ', str(self.offHour.get()), ':', str(self.offMin.get()).zfill(2),
                   sep='')
@@ -219,7 +219,7 @@ class Controller:
         f = open('spyeconfig.txt', 'w+')
         f.write(
             self.filepath.get() + '\n' + self.ipaddy.get() + '\n' + self.active.get() + '\n' + self.activedelay.get() + '\n' + self.idle.get() + '\n' +
-            self.daysLabel.get() + '\n' + self.onHour.get() + '\n' + self.onMin.get() + '\n' + self.offHour.get() + '\n' + self.offMin.get() + '\n')
+            self.daysLabel.get() + '\n' + str(self.onHour.get()) + '\n' + str(self.onMin.get()) + '\n' + str(self.offHour.get()) + '\n' + str(self.offMin.get()) + '\n')
         f.close()
         logger.info("Writing complete.")
 

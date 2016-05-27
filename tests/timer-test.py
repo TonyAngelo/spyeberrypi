@@ -88,6 +88,9 @@ class Controller:
             if int(self.newDays)==1 or int(self.newDays)==2:
                 self.daysLabel = dayLabels[int(self.newDays)-1]
                 self.days = dayOptions[self.daysLabel]
+                # cancel old jobs and start new ones
+                self.schedDisplayOn()
+                self.schedDisplayOff()
                 print('New Turn On/Off days:', self.daysLabel)
             else:
                 print('Invalid entry')
@@ -104,11 +107,8 @@ class Controller:
                     self.turnOnHour = int(self.newTurnOnHour)
                     # assign new minute
                     self.turnOnMin = int(self.newTurnOnMin)
-                    # cancel the old job
-                    self.sched.unschedule_job(self.DisplayOnJob)
-                    # schedule the new job
-                    self.DisplayOnJob = self.sched.add_cron_job(self.displayPowerOn, day_of_week=self.days,
-                                                                hour=self.turnOnHour, minute=self.turnOnMin)
+                    # cancel old job and start new one
+                    self.schedDisplayOn()
                     # print new turn on time
                     print('New Turn On time ', str(self.turnOnHour), ':', str(self.turnOnMin).zfill(2), sep='')
                 else:
@@ -128,11 +128,8 @@ class Controller:
                     self.turnOffHour = int(self.newTurnOffHour)
                     # assign new minute
                     self.turnOffMin = int(self.newTurnOffMin)
-                    # cancel the old job
-                    self.sched.unschedule_job(self.DisplayOffJob)
-                    # schedule the new job
-                    self.DisplayOffJob = self.sched.add_cron_job(self.displayPowerOff, day_of_week=self.days,
-                                                                 hour=self.turnOffHour, minute=self.turnOffMin)
+                    # cancel old job and start new one
+                    self.schedDisplayOff()
                     # print new turn off time
                     print('New Turn Off time ', str(self.turnOffHour), ':', str(self.turnOffMin).zfill(2), sep='')
                 else:
@@ -156,6 +153,20 @@ class Controller:
 
     def displayPowerOff(self):
         print("Display Off")
+
+    def schedDisplayOn(self):
+        # cancel the old job
+        self.sched.unschedule_job(self.DisplayOnJob)
+        # schedule the new job
+        self.DisplayOnJob = self.sched.add_cron_job(self.displayPowerOn, day_of_week=self.days,
+                                                    hour=self.turnOnHour, minute=self.turnOnMin)
+
+    def schedDisplayOff(self):
+        # cancel the old job
+        self.sched.unschedule_job(self.DisplayOffJob)
+        # schedule the new job
+        self.DisplayOffJob = self.sched.add_cron_job(self.displayPowerOff, day_of_week=self.days,
+                                                     hour=self.turnOffHour, minute=self.turnOffMin)
 
 
 app = Controller()

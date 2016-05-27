@@ -1,5 +1,6 @@
 import sys
 import logging
+import time
 import serial # for 232 control
 
 logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/models.log', level=logging.DEBUG)
@@ -85,8 +86,12 @@ class Controller:
 
         if self.main_selection == '1':
             self.tv.power(1)
+            time.sleep(10)
+            self.printMenu()
         elif self.main_selection == '2':
             self.tv.power(0)
+            time.sleep(10)
+            self.printMenu()
         elif self.main_selection == '3':
             sys.exit()
         else:

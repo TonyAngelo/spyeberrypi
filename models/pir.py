@@ -9,27 +9,29 @@ class LED(Observable):
     def __init__(self, port=1, initialValue="Off"):
         Observable.__init__(self, initialValue)
         self.port = port
-        logger.info("LED init")
         GPIO.setup(self.port, GPIO.OUT)
         GPIO.output(self.port, GPIO.LOW)
+        logger.info("LED init")
 
     def ledState(self,value):
         if value==1:
             GPIO.output(self.port, GPIO.HIGH)
+            self.set("On")
         else:
             GPIO.output(self.port, GPIO.LOW)
+            self.set("Off")
 
 
 # sensor instance of the observable class
 class Sensor(Observable):
-    def __init__(self, sensor=1, initialValue="Off"):
+    def __init__(self, sensor=23, initialValue="Off"):
         Observable.__init__(self,initialValue)
         self.sensor=sensor
-        logger.info("Sensor init")
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.sensor,GPIO.IN,GPIO.PUD_DOWN)
         GPIO.add_event_detect(self.sensor,GPIO.BOTH,self.sensorChange)
+        logger.info("Sensor init")
 
         self.led = LED(24)
 

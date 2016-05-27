@@ -37,7 +37,7 @@ class planarDisplay(Observable):
         Observable.__init__(self, initialValue)
         self.ser = serial.Serial(
             port='/dev/' + device,
-            baudrate=9600,
+            baudrate=19200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,

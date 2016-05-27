@@ -49,7 +49,7 @@ class Controller:
 
         # set default turn on and turn off times
         # default to everyday
-        self.daysLabel='Daily'
+        self.daysLabel=dayLabels[0]
         self.days=dayOptions[self.daysLabel]
         # turn on at 7am
         self.turnOnHour = 7
@@ -86,7 +86,7 @@ class Controller:
             self.newDays = input("Select which days to use: ")
             # validate entry
             if int(self.newDays)==1 or int(self.newDays)==2:
-                self.daysLabel = dayLabels[int(self.newDays)]
+                self.daysLabel = dayLabels[int(self.newDays)-1]
                 self.days = dayOptions[self.daysLabel]
                 print('New Turn On/Off days:', self.daysLabel)
             else:

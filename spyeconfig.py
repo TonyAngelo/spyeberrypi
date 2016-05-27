@@ -68,8 +68,8 @@ class Controller:
             self.offHour = Observable(int(f.readline()[:-1]))
             self.offMin = Observable(int(f.readline()[:-1]))
             logger.info("Parsing complete.")
-        # close the file
-        f.close()
+            # close the file
+            f.close()
 
         # create the title/value dictionary
         self.settingsDict = {'Spyeworks IP':self.ipaddy, 'Active List':self.active, 'Active Delay':self.activedelay, 'Idle List':self.idle}

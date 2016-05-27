@@ -9,8 +9,8 @@ class planarDisplay(Observable):
     def __init__(self, device='ttyUSB0', initialValue="Off"):
         Observable.__init__(self, initialValue)
         self.ser = serial.Serial(
-            port='/dev/'+device,
-            baudrate=9600,
+            port='/dev/' + device,
+            baudrate=19200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
@@ -18,19 +18,11 @@ class planarDisplay(Observable):
         )
         logger.info("Planar OLED init")
 
-    def power(self,value):
-        if value==1:
-            self.ser.write('display.power=1\r') # turn on display
+    def power(self, value):
+        if value == 1:
+            self.ser.write(b"display.power=1\r")  # turn on display
             logger.info("Planar OLED power on sent")
-            self.set("On")
-
-            self.rxbuf = self.ser.readline()
-            print(self.rxbuf)
 
         else:
-            self.ser.write('display.power=0\r') # turn off display
+            self.ser.write(b"display.power=0\r")  # turn off display
             logger.info("Planar OLED power off sent")
-            self.set("Off")
-
-            self.rxbuf = self.ser.readline()
-            print(self.rxbuf)

@@ -44,7 +44,7 @@ class planarDisplay(Observable):
             timeout=1
         )
         logger.info("Planar OLED init")
-        self.getPower()
+        #self.getPower()
 
     def rxBufParse(self):
         self.rxbuf = self.ser.readline()
@@ -61,25 +61,26 @@ class planarDisplay(Observable):
         elif self.rxbuf.find(b'DISPLAY.POWER:1'):  # power on feedback
             self.set("On")
             print('Power On')
+        self.rxbuf = ''
 
     def getPower(self):
         self.ser.write(b"display.power?\r")  # get power status
         logger.info("Planar OLED power get sent")
-        time.sleep(1)
-        self.rxBufParse()
+        #time.sleep(1)
+        #self.rxBufParse()
 
     def power(self, value):
         if value == 1:
             self.ser.write(b"display.power=1\r")  # turn on display
             logger.info("Planar OLED power on sent")
-            time.sleep(5)
-            self.rxBufParse()
+            #time.sleep(5)
+            #self.rxBufParse()
 
         else:
             self.ser.write(b"display.power=0\r")  # turn off display
             logger.info("Planar OLED power off sent")
-            time.sleep(1)
-            self.rxBufParse()
+            #time.sleep(1)
+            #self.rxBufParse()
 
 # controller, talks to views and models
 class Controller:

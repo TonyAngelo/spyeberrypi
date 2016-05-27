@@ -1,7 +1,7 @@
 import sys
 import logging
 
-from models.planarOLED import planarDisplay
+from ..models.planarOLED import planarDisplay
 
 logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/models.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)

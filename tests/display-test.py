@@ -49,15 +49,15 @@ class planarDisplay(Observable):
     def rxBufParse(self):
         self.rxbuf = self.ser.readline()
 
-        if self.rxbuf.find('DISPLAY.POWER:0'): # power off feedback
+        if self.rxbuf.find(b'DISPLAY.POWER:0'): # power off feedback
             self.set("Off")
             print('Power Off')
-        elif self.rxbuf.find('DISPLAY.POWER:1'): # power on feedback
+        elif self.rxbuf.find(b'DISPLAY.POWER:1'): # power on feedback
             self.set("On")
             print('Power Off')
 
     def getPower(self):
-        self.ser.write(b"display.power=1\r")  # turn on display
+        self.ser.write(b"display.power?\r")  # get power status
         logger.info("Planar OLED power get sent")
         time.sleep(1)
         self.rxBufParse()

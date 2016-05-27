@@ -48,7 +48,7 @@ class planarDisplay(Observable):
 
     def rxBufParse(self):
         self.rxbuf = self.ser.readline()
-
+        print(self.rxbuf)
         if self.rxbuf.find(b'DISPLAY.POWER:0'): # power off feedback
             self.set("Off")
             print('Power Off')
@@ -66,7 +66,7 @@ class planarDisplay(Observable):
         if value == 1:
             self.ser.write(b"display.power=1\r")  # turn on display
             logger.info("Planar OLED power on sent")
-            time.sleep(1)
+            time.sleep(5)
             self.rxBufParse()
 
         else:
@@ -90,7 +90,8 @@ class Controller:
 
             1. Turn On TV
             2. Turn Off TV
-            3. Quit/Exit
+            3. Get Power Status
+            4. Quit/Exit
             """)
 
         # get the selection
@@ -106,6 +107,10 @@ class Controller:
             time.sleep(10)
             self.printMenu()
         elif self.main_selection == '3':
+            self.tv.getPower()
+            time.sleep(10)
+            self.printMenu()
+        elif self.main_selection == '4':
             sys.exit()
         else:
             print("Invalid selection.\n")

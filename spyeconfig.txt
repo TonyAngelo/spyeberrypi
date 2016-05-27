@@ -1,5 +1,10 @@
 c:/users/public/documents/spyeworks/content/
-00:90:0B:1E:B9:52
+10.10.8.140
 active
 10
 idle
+Daily
+7
+0
+19
+0

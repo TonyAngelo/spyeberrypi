@@ -54,7 +54,7 @@ class planarDisplay(Observable):
             print('Power Off')
         elif self.rxbuf.find(b'DISPLAY.POWER:1'): # power on feedback
             self.set("On")
-            print('Power Off')
+            print('Power On')
 
     def getPower(self):
         self.ser.write(b"display.power?\r")  # get power status

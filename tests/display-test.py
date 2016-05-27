@@ -1,7 +1,9 @@
 import sys
 import logging
 
-from ..models.planarOLED import planarDisplay
+sys.path.append("..")
+
+from models import planarOLED
 
 logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/models.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -11,7 +13,7 @@ logger = logging.getLogger(__name__)
 class Controller:
     def __init__(self):
         # initiate the tv
-        self.tv = planarDisplay('ttyUSB0')
+        self.tv = planarOLED.planarDisplay('ttyUSB0')
 
         # print the menu
         self.printMenu()

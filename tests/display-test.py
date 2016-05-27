@@ -46,7 +46,7 @@ class planarDisplay(Observable):
 
     def power(self, value):
         if value == 1:
-            self.ser.write('display.power=1\r')  # turn on display
+            self.ser.write(b"display.power=1\r")  # turn on display
             logger.info("Planar OLED power on sent")
             self.set("On")
 
@@ -54,7 +54,7 @@ class planarDisplay(Observable):
             print(self.rxbuf)
 
         else:
-            self.ser.write('display.power=0\r')  # turn off display
+            self.ser.write(b"display.power=0\r")  # turn off display
             logger.info("Planar OLED power off sent")
             self.set("Off")
 

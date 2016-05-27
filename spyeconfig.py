@@ -44,7 +44,7 @@ class Controller:
             self.active = Observable("active")
             self.activedelay = Observable("0")
             self.idle = Observable("idle")
-            self.onoffDays = Observable("Daily")
+            self.daysLabel = Observable("Daily")
             self.onHour = Observable(7)
             self.onMin = Observable(0)
             self.offHour = Observable(19)

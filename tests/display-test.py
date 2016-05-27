@@ -49,10 +49,16 @@ class planarDisplay(Observable):
     def rxBufParse(self):
         self.rxbuf = self.ser.readline()
         print(self.rxbuf)
-        if self.rxbuf.find(b'DISPLAY.POWER:0'): # power off feedback
+        if self.rxbuf.find(b'DISPLAY.POWER:OFF'): # power off feedback
             self.set("Off")
             print('Power Off')
-        elif self.rxbuf.find(b'DISPLAY.POWER:1'): # power on feedback
+        elif self.rxbuf.find(b'DISPLAY.POWER:ON'):  # power on feedback
+            self.set("On")
+            print('Power On')
+        elif self.rxbuf.find(b'DISPLAY.POWER:0'):  # power off feedback
+            self.set("Off")
+            print('Power Off')
+        elif self.rxbuf.find(b'DISPLAY.POWER:1'):  # power on feedback
             self.set("On")
             print('Power On')
 

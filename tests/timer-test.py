@@ -43,7 +43,7 @@ class Controller:
 
         # set default turn on and turn off times
         # default to everyday
-        self.days='sun-sat'
+        self.days='mon-sun'
         # turn on at 7am
         self.turnOnHour = 7
         self.turnOnMin = 0

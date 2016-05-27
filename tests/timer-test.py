@@ -45,8 +45,8 @@ class Controller:
         # default to everyday
         self.days='sun-sat'
         # turn on at 7am
-        self.turnOnHour=7
-        self.turnOnMin=0
+        self.turnOnHour = 7
+        self.turnOnMin = 0
         self.DisplayOnJob = self.sched.add_cron_job(self.displayPowerOn, day_of_week=self.days, hour=self.turnOnHour, minute=self.turnOnMin)
 
         # turn off at 7pm
@@ -75,10 +75,10 @@ class Controller:
             print('Current Turn On time ', str(self.turnOnHour), ':', str(self.turnOnMin).zfill(2), sep='')
             self.newTurnOnHour = input("Enter new turn on hour (in 24 hour clock): ")
             # validate hour entry
-            if(int(self.newTurnOnHour)<24 and int(self.newTurnOnHour)>=0):
+            if int(self.newTurnOnHour) < 24 and int(self.newTurnOnHour) >= 0:
                 self.newTurnOnMin = input("Enter new turn on minute: ")
                 # validate min entry
-                if(int(self.newTurnOnMin)<60 and int(self.newTurnOnMin)>=0):
+                if int(self.newTurnOnMin) < 60 and int(self.newTurnOnMin) >= 0:
                     # assign new hour
                     self.turnOnHour = self.newTurnOnHour
                     # assign new minute
@@ -99,10 +99,10 @@ class Controller:
             print('Current Turn Off time ', str(self.turnOffHour), ':', str(self.turnOffMin).zfill(2), sep='')
             self.newTurnOffHour = input("Enter new turn off hour (in 24 hour clock): ")
             # validate hour entry
-            if (int(self.newTurnOffHour) < 24 and int(self.newTurnOffHour) >= 0):
+            if int(self.newTurnOffHour) < 24 and int(self.newTurnOffHour) >= 0:
                 self.newTurnOffMin = input("Enter new turn off minute: ")
                 # validate min entry
-                if (int(self.newTurnOffMin) < 60 and int(self.newTurnOffMin) >= 0):
+                if int(self.newTurnOffMin) < 60 and int(self.newTurnOffMin) >= 0:
                     # assign new hour
                     self.turnOffHour = self.newTurnOffHour
                     # assign new minute

@@ -4,7 +4,7 @@ import time
 
 from apscheduler.scheduler import Scheduler
 
-logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/models.log', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='../logs/models.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 dayLabels=['Daily','WeekDays']

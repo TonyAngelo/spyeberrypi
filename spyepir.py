@@ -27,7 +27,7 @@ class Controller:
         self.model.sensorstate.addCallback(self.updateSensorState)
 
         # create variables for timers
-        self.activeTimer=Timer(1, self.dummyFunc, ())
+        self.activeTimer=Timer(1, self.restartFunc, ())
         #self.playIdleList=False
 
         # update variables with data from model
@@ -52,6 +52,12 @@ class Controller:
     def dummyFunc(self):
         pass
 
+    # restart function for passing to timer thread
+    def restartFunc(self):
+        if self.model.sensorstate.get() == 'On':
+            # sensor is active, restart active list
+            self.startActiveList()
+
     # handles updates to the sensor status
     def updateSensorState(self, value):
         # updates the sensor status in the view
@@ -60,11 +66,14 @@ class Controller:
         if value=="On":
             # if the active timer is not active
             if self.activeTimer.isAlive()==False:
-                # play the active list
-                self.model.spyeworks.playActive()
-                # start the active list timer
-                self.activeTimer = Timer(int(self.model.activedelay.get()), self.dummyFunc, ())
-                self.activeTimer.start()
+                self.startActiveList()
+
+    def startActiveList(self):
+        # play the active list
+        self.model.spyeworks.playActive()
+        # start the active list timer
+        self.activeTimer = Timer(int(self.model.activedelay.get()), self.restartFunc, ())
+        self.activeTimer.start()
 
 app = Controller()
 

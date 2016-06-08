@@ -63,7 +63,7 @@ class Controller:
                 # play the active list
                 self.model.spyeworks.playActive()
                 # start the active list timer
-                self.activeTimer = Timer(int(self.model.activedelay.get()), self.model.spyeworks.playIdle, ())
+                self.activeTimer = Timer(int(self.model.activedelay.get()), self.dummyFunc(), ())
                 self.activeTimer.start()
 
 app = Controller()

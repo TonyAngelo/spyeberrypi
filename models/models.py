@@ -38,7 +38,7 @@ class Observable:
 from models.pir import Sensor
 from models.spye import Spyeworks
 from models.planarOLED import planarDisplay
-#from ipscan import find_mac_on_network
+from models.ipscan import find_mac_on_network
 
 # model
 class Model:
@@ -51,10 +51,12 @@ class Model:
             logger.warn("Could not open spyeconfig.txt")
 
             self.filepath = Observable("c:/users/public/documents/spyeworks/content/")
+            self.mac = Observable("00:00:00:00:00:00")
             self.ipaddy = Observable("192.168.1.110")
             self.active = Observable("active")
-            self.activedelay = Observable("0")
+            self.activedelay = Observable("10")
             self.idle = Observable("idle")
+            self.idledelay = Observable("10")
             self.daysLabel = Observable("Daily")
             self.onHour = Observable(7)
             self.onMin = Observable(0)
@@ -67,12 +69,12 @@ class Model:
             logger.info("Parsing spyeconfig.txt...")
 
             self.filepath = Observable(f.readline()[:-1])
-            self.ipaddy = Observable(f.readline()[:-1])
-            # self.mac = Observable(f.readline()[:-1])
-            # self.ipaddy = Observable(find_mac_on_network(self.mac.get()))
+            self.mac = Observable(f.readline()[:-1])
+            self.ipaddy = Observable(find_mac_on_network(self.mac.get()))
             self.active = Observable(f.readline()[:-1])
             self.activedelay = Observable(f.readline()[:-1])
             self.idle = Observable(f.readline()[:-1])
+            self.idledelay = Observable(f.readline()[:-1])
             self.daysLabel = Observable(f.readline()[:-1])
             self.onHour = Observable(int(f.readline()[:-1]))
             self.onMin = Observable(int(f.readline()[:-1]))
@@ -100,8 +102,9 @@ class Model:
                                                      minute=str(self.offMin.get()))
 
         # initiate the spyeworks player
-        #if len(self.ipaddy.get())==0:
-            #logger.error("No IP address found for MAC %s" , self.mac.get())
+        if len(self.ipaddy.get())==0:
+            logger.error("No IP address found for MAC %s" , self.mac.get())
+            print("No IP address found for MAC %s" , self.mac.get())
 
         self.spyeworks = Spyeworks(self.ipaddy.get(),self.filepath.get(),
                                    self.active.get(),self.idle.get())
@@ -122,9 +125,18 @@ class Model:
     ### Methods for the controller to update variables in the model
     ###############################################################
 
+    def SetMAC(self, value):
+        self.mac.set(value)
+        ip = find_mac_on_network(self.mac.get())
+        if len(ip) == 0:
+            logger.error("No IP address found for MAC %s", self.mac.get())
+            print("No IP address found for MAC %s", self.mac.get())
+        else:
+            self.SetIP(ip)
+
     def SetIP(self, value):
         self.ipaddy.set(value)
-        self.UpdateTextFile()
+        #self.UpdateTextFile()
         # also update the spyeworks player
         self.spyeworks.ipaddy=value
 
@@ -150,6 +162,10 @@ class Model:
         self.activedelay.set(value)
         self.UpdateTextFile()
 
+    def SetIdleDelayTime(self, value):
+        self.idledelay.set(value)
+        self.UpdateTextFile()
+
     ##########################################################
     ### Method for writing current model values to a text file
     ##########################################################
@@ -159,8 +175,7 @@ class Model:
         # write the model to a text file for tracking variable changes
         f=open('spyeconfig.txt','w+')
         f.write(
-            self.filepath.get() + '\n' + self.ipaddy.get() + '\n' + self.active.get() + '\n' + self.activedelay.get() + '\n' + self.idle.get() + '\n' +
-            self.daysLabel.get() + '\n' + str(self.onHour.get()) + '\n' + str(self.onMin.get()) + '\n' + str(
-                self.offHour.get()) + '\n' + str(self.offMin.get()) + '\n')
+            self.filepath.get() + '\n' + self.mac.get() + '\n' + self.active.get() + '\n' + self.activedelay.get() + '\n' + self.idle.get() + '\n' + self.idledelay.get() + '\n' +
+            self.daysLabel.get() + '\n' + str(self.onHour.get()) + '\n' + str(self.onMin.get()) + '\n' + str(self.offHour.get()) + '\n' + str(self.offMin.get()) + '\n')
         f.close()
         logger.info("Writing complete.")

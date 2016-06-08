@@ -1,7 +1,7 @@
 c:/users/public/documents/spyeworks/content/
-00:00:00:00:00:00
+b8:ae:ed:7f:1b:d0
 active
-10
+80
 idle
 10
 WeekDays

@@ -7,7 +7,7 @@ import socket
 import math
 import errno
 
-logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/ipscan.log', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='../logs/ipscan.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def long2net(arg):

@@ -2,7 +2,7 @@ from models.models import Observable
 import RPi.GPIO as GPIO # for the sensor
 import logging
 
-logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/sensor.log', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='../logs/sensor.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 class LED(Observable):

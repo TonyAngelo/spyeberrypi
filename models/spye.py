@@ -4,7 +4,7 @@ import socket # for ip comms
 import chardet # for character encoding/decoding
 import logging
 
-logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/spye.log', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='../logs/spye.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # spyeworks instance

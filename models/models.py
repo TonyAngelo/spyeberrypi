@@ -1,4 +1,5 @@
 import logging
+from threading import Timer # for delay timers
 from apscheduler.scheduler import Scheduler
 
 dayLabels=['Daily','WeekDays']
@@ -6,7 +7,7 @@ dayOptions={
     'Daily':'mon-sun',
     'WeekDays':'mon-fri'}
 
-logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='logs/models.log', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)-5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', filename='../logs/models.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # data object
@@ -37,7 +38,7 @@ class Observable:
 
 from models.pir import Sensor
 from models.spye import Spyeworks
-from models.planarOLED import planarDisplay
+from models.planarOLED import planarDisplay as Display
 from models.ipscan import find_mac_on_network
 
 # model
@@ -70,7 +71,9 @@ class Model:
 
             self.filepath = Observable(f.readline()[:-1])
             self.mac = Observable(f.readline()[:-1])
-            self.ipaddy = Observable(find_mac_on_network(self.mac.get()))
+            # self.ipaddy = Observable(find_mac_on_network(self.mac.get()))
+            self.ipaddy = Observable('0.0.0.0')
+            self.GetIP(self.mac.get())
             self.active = Observable(f.readline()[:-1])
             self.activedelay = Observable(f.readline()[:-1])
             self.idle = Observable(f.readline()[:-1])
@@ -84,41 +87,42 @@ class Model:
             # close the file
             f.close()
 
-        # get the current status of the sensor variable
+        # add the sensor
         self.sensorstate = Sensor(23)
 
         # add the tv
-        self.tv = planarDisplay('ttyUSB0')
+        self.tv = Display('ttyUSB0')
 
         # Start the scheduler
         self.sched = Scheduler()
         self.sched.start()
 
-        # set default turn on and turn off times
+        # set turn on and turn off times
         self.days = dayOptions[self.daysLabel.get()]
         self.DisplayOnJob = self.sched.add_cron_job(self.displayPowerOn, day_of_week=self.days, hour=str(self.onHour.get()),
                                                     minute=str(self.onMin.get()))
         self.DisplayOffJob = self.sched.add_cron_job(self.displayPowerOff, day_of_week=self.days, hour=str(self.offHour.get()),
                                                      minute=str(self.offMin.get()))
 
-        # initiate the spyeworks player
-        if len(self.ipaddy.get())==0:
-            logger.error("No IP address found for MAC %s" , self.mac.get())
-            print("No IP address found for MAC %s" , self.mac.get())
-
+        # add the spyeworks player
         self.spyeworks = Spyeworks(self.ipaddy.get(),self.filepath.get(),
                                    self.active.get(),self.idle.get())
+        # setup spyeworks callbacks
+        self.ipaddy.addCallback(self.updateSpyeworksIP)
+        self.filepath.addCallback(self.updateSpyeworksFilepath)
+        self.active.addCallback(self.updateSpyeworksActive)
+        self.idle.addCallback(self.updateSpyeworksIdle)
 
     ###############################################################
     ### Methods for controlling the TV
     ###############################################################
 
     def displayPowerOn(self):
-        print('Turn On Timer')
+        print('Turn On TV')
         self.tv.power(1)
 
     def displayPowerOff(self):
-        print('Turn Off Timer')
+        print('Turn Off TV')
         self.tv.power(0)
 
     ###############################################################
@@ -127,35 +131,44 @@ class Model:
 
     def SetMAC(self, value):
         self.mac.set(value)
-        ip = find_mac_on_network(self.mac.get())
-        if len(ip) == 0:
-            logger.error("No IP address found for MAC %s", self.mac.get())
-            print("No IP address found for MAC %s", self.mac.get())
+        self.GetIP(self.mac.get())
+
+    def GetIP(self, mac):
+        ip = find_mac_on_network(mac)
+        if ip is None:
+            logger.error("No IP address found for MAC %s", mac)
+            print("No IP address found for MAC %s", mac)
+            self.ipTimer = Timer(60, self.GetIP, [mac])
+            self.ipTimer.start()
         else:
             self.SetIP(ip)
 
     def SetIP(self, value):
         self.ipaddy.set(value)
         #self.UpdateTextFile()
-        # also update the spyeworks player
+
+    def updateSpyeworksIP(self, value):
         self.spyeworks.ipaddy=value
 
     def SetFilepath(self, value):
         self.filepath.set(value)
         self.UpdateTextFile()
-        # also update the spyeworks player
+
+    def updateSpyeworksFilepath(self, value):
         self.spyeworks.filepath=value
 
     def SetActive(self, value):
         self.active.set(value)
         self.UpdateTextFile()
-        # also update the spyeworks player
+
+    def updateSpyeworksActive(self, value):
         self.spyeworks.active=value
 
     def SetIdle(self, value):
         self.idle.set(value)
         self.UpdateTextFile()
-        # also update the spyeworks player
+
+    def updateSpyeworksIdle(self, value):
         self.spyeworks.idle=value
 
     def SetActiveDelayTime(self, value):
